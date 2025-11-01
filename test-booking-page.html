@@ -1,0 +1,140 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Test Booking Flow</title>
+    <style>
+        body { font-family: Arial, sans-serif; margin: 20px; }
+        .test-section { margin: 20px 0; padding: 20px; border: 1px solid #ccc; border-radius: 5px; }
+        .success { color: green; }
+        .error { color: red; }
+        button { padding: 10px 20px; margin: 5px; cursor: pointer; }
+        pre { background: #f5f5f5; padding: 10px; border-radius: 3px; overflow-x: auto; }
+    </style>
+</head>
+<body>
+    <h1>Booking Flow Test</h1>
+    
+    <div class="test-section">
+        <h2>1. Test Database Connection</h2>
+        <button onclick="testConnection()">Test Connection</button>
+        <div id="connection-result"></div>
+    </div>
+
+    <div class="test-section">
+        <h2>2. Test Create Booking</h2>
+        <button onclick="testCreateBooking()">Create Test Booking</button>
+        <div id="create-result"></div>
+    </div>
+
+    <div class="test-section">
+        <h2>3. Test Get Bookings</h2>
+        <button onclick="testGetBookings()">Get All Bookings</button>
+        <div id="get-result"></div>
+    </div>
+
+    <div class="test-section">
+        <h2>4. Test Complete Flow</h2>
+        <button onclick="testCompleteFlow()">Test Complete Flow</button>
+        <div id="flow-result"></div>
+    </div>
+
+    <script>
+        const API_BASE = 'http://localhost:3000/api';
+        
+        async function testConnection() {
+            const resultDiv = document.getElementById('connection-result');
+            try {
+                const response = await fetch(`${API_BASE}/test-db`);
+                const data = await response.json();
+                resultDiv.innerHTML = `<div class="success">✅ Connection successful</div><pre>${JSON.stringify(data, null, 2)}</pre>`;
+            } catch (error) {
+                resultDiv.innerHTML = `<div class="error">❌ Connection failed: ${error.message}</div>`;
+            }
+        }
+
+        async function testCreateBooking() {
+            const resultDiv = document.getElementById('create-result');
+            try {
+                const bookingData = {
+                    carId: '507f1f77bcf86cd799439011',
+                    pickupDate: '2024-02-01',
+                    returnDate: '2024-02-03',
+                    pickupLocation: 'Downtown Location',
+                    returnLocation: 'Downtown Location',
+                    pickupTime: '10:00',
+                    returnTime: '10:00',
+                    rentalDays: 2,
+                    dailyRate: 89,
+                    totalAmount: 178,
+                    notes: 'Test booking from HTML page',
+                    driverAge: '25-29',
+                    additionalDriver: false,
+                    insurance: 'basic'
+                };
+
+                const response = await fetch(`${API_BASE}/bookings`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    credentials: 'include',
+                    body: JSON.stringify(bookingData)
+                });
+
+                const data = await response.json();
+                
+                if (response.ok) {
+                    resultDiv.innerHTML = `<div class="success">✅ Booking created successfully</div><pre>${JSON.stringify(data, null, 2)}</pre>`;
+                } else {
+                    resultDiv.innerHTML = `<div class="error">❌ Booking creation failed: ${data.error || 'Unknown error'}</div>`;
+                }
+            } catch (error) {
+                resultDiv.innerHTML = `<div class="error">❌ Error: ${error.message}</div>`;
+            }
+        }
+
+        async function testGetBookings() {
+            const resultDiv = document.getElementById('get-result');
+            try {
+                const response = await fetch(`${API_BASE}/bookings`, {
+                    credentials: 'include'
+                });
+
+                const data = await response.json();
+                
+                if (response.ok) {
+                    resultDiv.innerHTML = `<div class="success">✅ Bookings retrieved successfully (${data.length} bookings)</div><pre>${JSON.stringify(data, null, 2)}</pre>`;
+                } else {
+                    resultDiv.innerHTML = `<div class="error">❌ Failed to retrieve bookings: ${data.error || 'Unknown error'}</div>`;
+                }
+            } catch (error) {
+                resultDiv.innerHTML = `<div class="error">❌ Error: ${error.message}</div>`;
+            }
+        }
+
+        async function testCompleteFlow() {
+            const resultDiv = document.getElementById('flow-result');
+            resultDiv.innerHTML = '<div>Testing complete flow...</div>';
+            
+            try {
+                // Step 1: Test connection
+                await testConnection();
+                await new Promise(resolve => setTimeout(resolve, 1000));
+                
+                // Step 2: Create booking
+                await testCreateBooking();
+                await new Promise(resolve => setTimeout(resolve, 1000));
+                
+                // Step 3: Get bookings
+                await testGetBookings();
+                
+                resultDiv.innerHTML += '<div class="success">✅ Complete flow test finished!</div>';
+            } catch (error) {
+                resultDiv.innerHTML += `<div class="error">❌ Flow test failed: ${error.message}</div>`;
+            }
+        }
+    </script>
+</body>
+</html>

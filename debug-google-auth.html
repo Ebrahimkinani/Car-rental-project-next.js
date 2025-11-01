@@ -1,0 +1,169 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Google Auth Debug</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+            background-color: #f5f5f5;
+        }
+        .container {
+            background: white;
+            padding: 30px;
+            border-radius: 8px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        .button {
+            background-color: #4285f4;
+            color: white;
+            padding: 12px 24px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 16px;
+            margin: 10px 0;
+            display: block;
+            width: 100%;
+        }
+        .button:hover {
+            background-color: #357ae8;
+        }
+        .log {
+            background-color: #f8f9fa;
+            border: 1px solid #e9ecef;
+            border-radius: 4px;
+            padding: 15px;
+            margin: 10px 0;
+            font-family: monospace;
+            white-space: pre-wrap;
+            max-height: 300px;
+            overflow-y: auto;
+        }
+        .error {
+            background-color: #f8d7da;
+            border-color: #f5c6cb;
+            color: #721c24;
+        }
+        .success {
+            background-color: #d4edda;
+            border-color: #c3e6cb;
+            color: #155724;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Google Authentication Debug</h1>
+        <p>This page helps debug Google sign-in issues. Check the console and logs below for any errors.</p>
+        
+        <button id="testGoogleAuth" class="button">Test Google Sign-In</button>
+        <button id="clearLogs" class="button" style="background-color: #6c757d;">Clear Logs</button>
+        
+        <div id="logs" class="log">Logs will appear here...</div>
+        
+        <h3>Environment Check:</h3>
+        <div id="envCheck" class="log"></div>
+    </div>
+
+    <!-- Firebase SDK -->
+    <script type="module">
+        import { initializeApp } from 'https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js';
+        import { getAuth, GoogleAuthProvider, signInWithPopup } from 'https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js';
+
+        // Firebase configuration
+        const firebaseConfig = {
+            apiKey: "AIzaSyCMY9Pfil9MUnX8dVejCZsB5yeVH4-9PF8",
+            authDomain: "test1-aa7c3.firebaseapp.com",
+            projectId: "test1-aa7c3",
+            storageBucket: "test1-aa7c3.firebasestorage.app",
+            messagingSenderId: "1002542632519",
+            appId: "1:1002542632519:web:9cdcff301ca464314cab62"
+        };
+
+        // Initialize Firebase
+        const app = initializeApp(firebaseConfig);
+        const auth = getAuth(app);
+        const googleProvider = new GoogleAuthProvider();
+
+        // Add scopes
+        googleProvider.addScope('email');
+        googleProvider.addScope('profile');
+        googleProvider.setCustomParameters({
+            prompt: 'select_account'
+        });
+
+        const logsDiv = document.getElementById('logs');
+        const envCheckDiv = document.getElementById('envCheck');
+
+        function log(message, type = 'info') {
+            const timestamp = new Date().toLocaleTimeString();
+            const logMessage = `[${timestamp}] ${message}`;
+            console.log(logMessage);
+            
+            const logElement = document.createElement('div');
+            logElement.textContent = logMessage;
+            logElement.className = type;
+            logsDiv.appendChild(logElement);
+            logsDiv.scrollTop = logsDiv.scrollHeight;
+        }
+
+        function clearLogs() {
+            logsDiv.innerHTML = 'Logs cleared...';
+        }
+
+        // Environment check
+        function checkEnvironment() {
+            let envInfo = 'Environment Check:\n';
+            envInfo += `User Agent: ${navigator.userAgent}\n`;
+            envInfo += `Current URL: ${window.location.href}\n`;
+            envInfo += `Protocol: ${window.location.protocol}\n`;
+            envInfo += `Host: ${window.location.host}\n`;
+            envInfo += `Firebase Config: ${JSON.stringify(firebaseConfig, null, 2)}\n`;
+            envInfo += `Auth Instance: ${auth ? 'Initialized' : 'Not initialized'}\n`;
+            envInfo += `Google Provider: ${googleProvider ? 'Initialized' : 'Not initialized'}\n`;
+            
+            envCheckDiv.textContent = envInfo;
+            log('Environment check completed');
+        }
+
+        // Test Google authentication
+        async function testGoogleAuth() {
+            try {
+                log('Starting Google authentication test...');
+                log('Auth instance: ' + (auth ? 'OK' : 'FAILED'));
+                log('Google provider: ' + (googleProvider ? 'OK' : 'FAILED'));
+                
+                log('Calling signInWithPopup...');
+                const result = await signInWithPopup(auth, googleProvider);
+                
+                log('Google sign-in successful!', 'success');
+                log('User: ' + JSON.stringify({
+                    uid: result.user.uid,
+                    email: result.user.email,
+                    displayName: result.user.displayName,
+                    photoURL: result.user.photoURL
+                }, null, 2), 'success');
+                
+            } catch (error) {
+                log('Google sign-in failed!', 'error');
+                log('Error code: ' + error.code, 'error');
+                log('Error message: ' + error.message, 'error');
+                log('Full error: ' + JSON.stringify(error, null, 2), 'error');
+            }
+        }
+
+        // Event listeners
+        document.getElementById('testGoogleAuth').addEventListener('click', testGoogleAuth);
+        document.getElementById('clearLogs').addEventListener('click', clearLogs);
+
+        // Initial environment check
+        checkEnvironment();
+        log('Debug page loaded successfully');
+    </script>
+</body>
+</html>

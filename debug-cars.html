@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Debug Cars API</title>
+</head>
+<body>
+    <h1>Debug Cars API</h1>
+    <div id="output"></div>
+    
+    <script>
+        async function testAPI() {
+            const output = document.getElementById('output');
+            output.innerHTML = '<p>Testing API...</p>';
+            
+            try {
+                const response = await fetch('/api/cars');
+                const data = await response.json();
+                
+                output.innerHTML = `
+                    <h2>API Response:</h2>
+                    <p>Status: ${response.status}</p>
+                    <p>Success: ${data.success}</p>
+                    <p>Number of cars: ${data.data ? data.data.length : 'No data'}</p>
+                    <h3>Cars:</h3>
+                    <pre>${JSON.stringify(data, null, 2)}</pre>
+                `;
+            } catch (error) {
+                output.innerHTML = `<p>Error: ${error.message}</p>`;
+            }
+        }
+        
+        testAPI();
+    </script>
+</body>
+</html>
