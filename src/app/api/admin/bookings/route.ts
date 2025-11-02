@@ -2,9 +2,6 @@ import { NextRequest, NextResponse } from 'next/server';
 import { dbConnect } from '@/lib/mongodb';
 import { requireAuth } from '@/lib/auth/requireAuth';
 import { Booking } from '@/models/Booking';
-import { Car } from '@/models/Car';
-import { Category } from '@/models/Category';
-import mongoose from 'mongoose';
 
 // Types for the API response
 export interface AdminBookingRow {
@@ -35,11 +32,6 @@ export interface AdminBookingsResponse {
   page: number;
   pageCount: number;
   total: number;
-}
-
-// Admin role check
-function isAdminRole(role: string): boolean {
-  return ['admin', 'manager', 'operations'].includes(role);
 }
 
 // Generate booking number (temporary until schema is updated)
@@ -101,9 +93,6 @@ export async function GET(request: NextRequest) {
     // Calculate pagination
     const skip = (page - 1) * limit;
 
-    // Get total count for pagination
-    const total = await Booking.countDocuments(query);
-
     // Fetch bookings with population
     const bookings = await Booking.find(query)
       .populate({
@@ -135,7 +124,7 @@ export async function GET(request: NextRequest) {
       // Apply search filter
       if (searchRegex) {
         const searchText = [
-          generateBookingNumber(booking._id.toString()),
+          generateBookingNumber((booking._id as any).toString()),
           booking.userId, // TODO: Replace with actual user name when user schema is updated
           car?.brand || '',
           car?.model || '',
@@ -152,8 +141,8 @@ export async function GET(request: NextRequest) {
       const userFullName = `User ${booking.userId}`; // TODO: Replace with actual user lookup
 
       transformedBookings.push({
-        id: booking._id.toString(),
-        bookingNumber: generateBookingNumber(booking._id.toString()),
+        id: (booking._id as any).toString(),
+        bookingNumber: generateBookingNumber((booking._id as any).toString()),
         client: {
           id: booking.userId,
           fullName: userFullName, // TODO: Get from users collection

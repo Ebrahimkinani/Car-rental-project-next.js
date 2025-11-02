@@ -1,6 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { dbConnect } from '@/lib/mongodb';
-import { verifySession } from '@/lib/auth/verifySession';
 import { getDb } from '@/lib/db/mongo';
 
 // Types for the API response
@@ -35,11 +34,6 @@ export interface ExpensesResponse {
   filteredTotal: number;
   trend: DailyPoint[];
   kpis: ExpensesKPIs;
-}
-
-// Admin role check
-function isAdminRole(role: string): boolean {
-  return ['admin', 'manager', 'finance'].includes(role);
 }
 
 // GET /api/admin/expenses - Get all expenses with filtering and pagination
@@ -398,9 +392,10 @@ export async function POST(request: NextRequest) {
     const savedExpense = { ...expense, _id: result.insertedId };
 
     // Transform for response
+    const dateStr = savedExpense.date.toISOString().split('T')[0];
     const expenseRow: ExpenseRow = {
       id: savedExpense._id.toString(),
-      date: typeof savedExpense.date === 'string' ? savedExpense.date.split('T')[0] : savedExpense.date.toISOString().split('T')[0],
+      date: dateStr,
       category: savedExpense.category,
       vendor: savedExpense.vendor,
       description: savedExpense.description,

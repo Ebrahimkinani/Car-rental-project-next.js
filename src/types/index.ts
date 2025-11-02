@@ -299,6 +299,7 @@ export interface PaymentFormData {
 }
 
 export interface BookingSummaryData {
+  carId: string;
   carName: string;
   carModel: string;
   rentalDays: number;
@@ -307,6 +308,13 @@ export interface BookingSummaryData {
   pickupDate: string;
   returnDate: string;
   pickupLocation: string;
+  returnLocation?: string;
+  pickupTime?: string;
+  returnTime?: string;
+  notes?: string;
+  driverAge?: string;
+  additionalDriver?: boolean;
+  insurance?: string;
 }
 
 /**

@@ -3,7 +3,7 @@ import { dbConnect } from '@/lib/mongodb';
 import { Car } from '@/models/Car';
 import { transformCarsForAPI } from '@/lib/transformers';
 
-export async function GET(request: NextRequest) {
+export async function GET(_request: NextRequest) {
   try {
     await dbConnect();
     

@@ -112,7 +112,7 @@ export default function PopularCarsSection({ className = "" }: PopularCarsSectio
             <div className="relative aspect-4/3 overflow-hidden">
               <Image
                 src={car.images?.[0]?.trim() || "/images/hero/car1.png"}
-                alt={""}
+                alt=""
                 fill
                 sizes="(max-width: 768px) 260px, (max-width: 1024px) 300px, (max-width: 1280px) 320px, 340px"
                 className="object-cover transition-transform duration-300 group-hover:scale-105"

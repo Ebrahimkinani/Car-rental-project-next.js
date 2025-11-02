@@ -1,5 +1,13 @@
 import mongoose, { ConnectOptions } from "mongoose";
 
+// Import models to ensure they are registered before database queries
+import "@/models/Category";
+import "@/models/Car";
+import "@/models/Booking";
+import "@/models/Favorite";
+import "@/models/Notification";
+import "@/models/Session";
+
 const MONGODB_URI = process.env.MONGODB_URI;
 const MONGODB_DB = process.env.MONGODB_DB; // e.g. "cars-project"
 

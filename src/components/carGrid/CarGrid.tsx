@@ -86,7 +86,7 @@ export default function CarGrid({ cars, className = "" }: CarGridProps) {
             <div className="relative aspect-4/3 overflow-hidden">
               <Image
                 src={car.images?.[0]?.trim() || "/images/hero/car1.png"}
-                alt={""}
+                alt=""
                 fill
                 sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, (max-width: 1280px) 33vw, 25vw"
                 className="object-cover transition-transform duration-300 group-hover:scale-105"

@@ -46,7 +46,7 @@ function generateTemporaryPassword(): string {
 export async function POST(request: NextRequest) {
   try {
     const body = await request.json();
-    const { fullName, email, role, permissions = [], status = 'active' } = body;
+    const { fullName, email, role, permissions: _permissions = [], status: _status = 'active' } = body;
     
     // Validate input
     if (!fullName || !email || !role) {

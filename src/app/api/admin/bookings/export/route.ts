@@ -67,7 +67,7 @@ export async function POST(request: NextRequest) {
       const category = car?.categoryId as any;
 
       return {
-        'Booking Number': generateBookingNumber(booking._id.toString()),
+        'Booking Number': generateBookingNumber((booking._id as any).toString()),
         'Client Name': `User ${booking.userId}`, // TODO: Get actual user name
         'Client Email': '', // TODO: Get actual user email
         'Car Make': car?.brand || 'Unknown',
@@ -101,7 +101,7 @@ export async function POST(request: NextRequest) {
     const csvContent = csvHeaders.join(',') + '\n' + 
       csvData.map(row => 
         csvHeaders.map(header => {
-          const value = row[header];
+          const value = (row as Record<string, any>)[header];
           // Escape CSV values
           if (typeof value === 'string' && (value.includes(',') || value.includes('"') || value.includes('\n'))) {
             return `"${value.replace(/"/g, '""')}"`;

@@ -4,7 +4,7 @@ import mongoose from 'mongoose';
 import { UserDoc } from '@/lib/types/db';
 
 // GET /api/admin/clients/kpis - Get KPI metrics
-export async function GET(request: NextRequest) {
+export async function GET(_request: NextRequest) {
   try {
     // TODO: Add proper admin authentication
     await dbConnect();

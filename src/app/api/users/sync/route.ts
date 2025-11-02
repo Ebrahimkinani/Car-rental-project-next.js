@@ -6,14 +6,12 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { requireAuth } from '@/lib/auth/requireAuth';
 import { dbConnect } from '@/lib/mongodb';
-import mongoose from 'mongoose';
-import type { User } from '@/types';
 
 export async function POST(request: NextRequest) {
   try {
     await dbConnect();
     // Verify session token
-    const { user } = await requireAuth(request);
+    const { user: _user } = await requireAuth(request);
 
     // This route is deprecated - user sync is handled by MongoDB auth
     return NextResponse.json(

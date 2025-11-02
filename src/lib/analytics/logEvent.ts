@@ -13,7 +13,7 @@ export async function logEvent(args: {
   const { mongoUserId, uid, type, context, ip, userAgent } = args;
 
   const db = await getDb();
-  const events = db.collection<EventDoc>("events");
+  const events = db.collection<Omit<EventDoc, '_id'>>("events");
 
   const now = new Date();
 

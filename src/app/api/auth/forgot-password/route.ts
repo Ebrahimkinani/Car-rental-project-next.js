@@ -48,7 +48,7 @@ export async function POST(request: NextRequest) {
     }
 
     // Create password reset token
-    const { token, expiresAt } = await createPasswordResetToken(user._id!);
+    const { token, expiresAt: _expiresAt } = await createPasswordResetToken(user._id!);
 
     // TODO: Send email with password reset link
     // For now, we'll log it to console in development

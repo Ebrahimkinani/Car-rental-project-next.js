@@ -1,4 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
+import { ObjectId } from "mongodb";
 import { logEvent } from "@/lib/analytics/logEvent";
 import { verifySession } from "@/lib/auth/verifySession";
 
@@ -18,8 +19,8 @@ export async function POST(req: NextRequest) {
     const userAgent = req.headers.get("user-agent") || null;
 
     await logEvent({
-      mongoUserId: session?.mongoUser?._id ?? null,
-      uid: session?.mongoUser?.uid ?? null,
+      mongoUserId: session?.id ? new ObjectId(session.id) : null,
+      uid: session?.email ?? null,
       type,
       context,
       ip,

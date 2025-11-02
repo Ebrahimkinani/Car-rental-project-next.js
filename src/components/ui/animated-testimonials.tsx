@@ -41,6 +41,7 @@ export const AnimatedTestimonials = ({
       const interval = setInterval(handleNext, 3000);
       return () => clearInterval(interval);
     }
+    return undefined;
   }, [autoplay, handleNext]);
 
   // Generate consistent rotations for each testimonial based on index

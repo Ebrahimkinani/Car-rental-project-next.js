@@ -1,10 +1,9 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { dbConnect } from '@/lib/mongodb';
-import { getSessionFromRequest } from '@/lib/auth';
 import { Category } from '@/models/Category';
 
 // GET /api/admin/car-types - Get distinct car types for filter dropdown
-export async function GET(request: NextRequest) {
+export async function GET(_request: NextRequest) {
   try {
     // TODO: Add proper admin authentication
     // For now, we'll allow access without authentication to match other admin routes

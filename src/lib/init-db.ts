@@ -6,7 +6,11 @@ import { dbConnect } from '@/lib/mongodb';
  */
 export async function initializeDatabase() {
   try {
-    const db = await dbConnect();
+    const mongoose = await dbConnect();
+    const db = mongoose.connection.db;
+    if (!db) {
+      throw new Error('Database connection failed');
+    }
     
     // Create indexes for categories
     await db.collection('categories').createIndex({ slug: 1 }, { unique: true });

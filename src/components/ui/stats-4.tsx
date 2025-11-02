@@ -4,7 +4,6 @@ import * as React from "react";
 import { clsx, type ClassValue } from "clsx";
 import { twMerge } from "tailwind-merge";
 import * as RechartsPrimitive from "recharts";
-import { ExternalLink } from "lucide-react";
 
 function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs));
@@ -52,7 +51,7 @@ type ChartContextProps = {
 
 const ChartContext = React.createContext<ChartContextProps | null>(null);
 
-function useChart() {
+export function useChart() {
   const context = React.useContext(ChartContext);
 
   if (!context) {

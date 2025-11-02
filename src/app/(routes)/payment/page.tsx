@@ -9,6 +9,7 @@ import { Button } from "@/components/ui/Button";
 
 // Fallback booking data if no data is provided
 const defaultBookingData: BookingSummaryData = {
+  carId: "",
   carName: "BMW 3 Series",
   carModel: "2023 BMW 330i",
   rentalDays: 3,
@@ -73,7 +74,7 @@ function PaymentPageContent() {
         throw new Error(errorData.error || 'Failed to create booking');
       }
 
-      const bookingResult = await bookingResponse.json();
+      void await bookingResponse.json();
       
       // Simulate payment processing
       console.log("Processing payment:", paymentData);

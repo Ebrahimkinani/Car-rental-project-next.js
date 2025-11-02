@@ -12,7 +12,6 @@ import { NextRequest, NextResponse } from 'next/server';
 import { validatePasswordResetToken, markTokenAsUsed } from '@/lib/db/passwordResetTokens';
 import { updateUserPassword } from '@/lib/db/users';
 import { getDb } from '@/lib/db/mongo';
-import { ObjectId } from 'mongodb';
 
 export async function POST(request: NextRequest) {
   try {
