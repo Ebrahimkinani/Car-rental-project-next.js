@@ -4,7 +4,7 @@ import { useState, useMemo, useEffect, use } from "react";
 import { notFound } from "next/navigation";
 import CarGrid from "@/components/carGrid/CarGrid";
 import BrandSearch from "@/components/ui/BrandSearch";
-import { getCarsByBrandFromStorage } from "../../../../../services/cars/cars.service";
+import { getCarsByBrandFromStorage } from "@services/cars/cars.service";
 import { categoriesApi } from "@/services/api/categories";
 import { Car, Category } from "@/types";
 

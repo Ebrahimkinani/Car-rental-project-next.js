@@ -65,7 +65,7 @@ export async function getCarByIdFromStorage(id: string): Promise<Car | null> {
   try {
     // For server-side rendering, use direct database access
     if (typeof window === 'undefined') {
-      const { Car } = await import('../../lib/models/Car');
+      const { Car } = await import('../../../lib/models/Car');
       const { dbConnect } = await import('@/lib/mongodb');
       const { transformCarForAPI } = await import('@/lib/transformers');
       

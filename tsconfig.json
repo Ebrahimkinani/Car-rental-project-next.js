@@ -19,16 +19,18 @@
         "name": "next"
       }
     ],
+    "baseUrl": "src",
     "paths": {
-      "@/*": ["./src/*"],
-      "@/components/*": ["./src/components/*"],
-      "@/app/*": ["./src/app/*"],
-      "@/lib/*": ["./src/lib/*"],
-      "@/hooks/*": ["./src/hooks/*"],
-      "@/types/*": ["./src/types/*"],
+      "@/*": ["./*"],
+      "@/components/*": ["./components/*"],
+      "@/app/*": ["./app/*"],
+      "@/lib/*": ["./lib/*"],
+      "@/hooks/*": ["./hooks/*"],
+      "@/types/*": ["./types/*"],
       "@/services/*": ["./services/*"],
-      "@/styles/*": ["./styles/*"],
-      "@/models/*": ["./lib/models/*"]
+      "@services/*": ["services/*"],
+      "@/styles/*": ["../styles/*"],
+      "@/models/*": ["../lib/models/*"]
     },
     "forceConsistentCasingInFileNames": true,
     "noUnusedLocals": true,
