@@ -4,8 +4,6 @@ import { dbConnect } from '@/lib/mongodb';
 
 export async function POST() {
   try {
-    console.log('🚀 Starting database initialization...');
-    
     // Initialize database with sample data
     await initializeDatabase();
     
@@ -19,8 +17,6 @@ export async function POST() {
     
     const categoriesCount = await db.collection('categories').countDocuments();
     const carsCount = await db.collection('cars').countDocuments();
-    
-    console.log('✅ Database initialization completed successfully');
     
     return NextResponse.json({
       success: true,
@@ -47,7 +43,7 @@ export async function POST() {
 
 export async function GET() {
   try {
-    console.log('📊 Checking database status...');
+    // Checking database status
     
     const mongoose = await dbConnect();
     const db = mongoose.connection.db;

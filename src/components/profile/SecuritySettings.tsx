@@ -18,8 +18,7 @@ export function SecuritySettings({ user }: SecuritySettingsProps) {
   const [isChangePasswordOpen, setIsChangePasswordOpen] = useState(false);
 
   const handlePasswordChangeSuccess = () => {
-    // Could add a toast notification here
-    console.log('Password changed successfully');
+    // Password change successful - could add toast notification here
   };
   const securityInfo = [
     {

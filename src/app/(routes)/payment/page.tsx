@@ -77,7 +77,8 @@ function PaymentPageContent() {
       void await bookingResponse.json();
       
       // Simulate payment processing
-      console.log("Processing payment:", paymentData);
+      // eslint-disable-next-line no-console
+      console.warn("[PaymentPage] Processing payment:", paymentData);
       
       // In a real app, you would:
       // 1. Send payment data to your backend

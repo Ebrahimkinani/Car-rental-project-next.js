@@ -25,7 +25,7 @@ export function useScrollPosition(): boolean {
       const threshold = heroHeight * 0.2;
       const newIsInHero = scrollY < threshold;
       
-      console.log('Scroll debug:', { scrollY, heroHeight, threshold, isInHero: newIsInHero });
+      // Scroll position debug removed for production
       setIsInHero(newIsInHero);
     };
 

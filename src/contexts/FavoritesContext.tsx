@@ -66,7 +66,6 @@ export function FavoritesProvider({ children }: FavoritesProviderProps) {
   const addToFavorites = useCallback(async (carId: string) => {
     try {
       setError(null);
-      console.log('Adding to favorites:', carId);
       
       const response = await fetch('/api/favorites', {
         method: 'POST',
@@ -77,11 +76,9 @@ export function FavoritesProvider({ children }: FavoritesProviderProps) {
         body: JSON.stringify({ carId }),
       });
 
-      console.log('Favorites API response:', response.status, response.statusText);
-
       if (!response.ok) {
         const errorData = await response.json().catch(() => ({}));
-        console.error('Favorites API error:', errorData);
+        console.error('[FavoritesContext] Failed to add favorite:', errorData);
         
         if (response.status === 401) {
           throw new Error('Please log in to add favorites');
@@ -89,8 +86,7 @@ export function FavoritesProvider({ children }: FavoritesProviderProps) {
         throw new Error(errorData.error || 'Failed to add to favorites');
       }
 
-      const result = await response.json();
-      console.log('Successfully added to favorites:', result);
+      await response.json();
       
       // Update local state only if not already in favorites
       setFavorites(prev => {

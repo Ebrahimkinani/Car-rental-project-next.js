@@ -40,7 +40,7 @@ export function Navbar() {
         return() => {
             document.removeEventListener("mousedown", handleClickOutside);
         };
-    }, [showNotif]);
+    }, [showNotif, setShowNotif]);
 
     // Hide the public navbar on admin routes
     if (pathname ?. startsWith("/admin")) {

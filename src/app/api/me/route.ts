@@ -18,8 +18,6 @@ import { findUserById } from '@/lib/db/users';
 
 export async function GET() {
   try {
-    console.log('📋 /api/me: Checking session');
-    
     // Connect to database
     await dbConnect();
     
@@ -27,20 +25,14 @@ export async function GET() {
     const sessionPayload = await getSessionFromCookie();
     
     if (!sessionPayload) {
-      console.log('📋 /api/me: No session found, returning null');
       return NextResponse.json({ user: null }, { status: 200 });
     }
-    
-    console.log('📋 /api/me: Session found for', sessionPayload.email);
     
     // Get user from database
     const user = await findUserById(sessionPayload.userId);
     if (!user) {
-      console.log('📋 /api/me: User not found in database');
       return NextResponse.json({ user: null }, { status: 200 });
     }
-    
-    console.log('📋 /api/me: Returning user data for', user.email);
     
     // Return user data (NEVER return password or sensitive auth data)
     return NextResponse.json({

@@ -41,35 +41,25 @@ export default function Page({ initialCars = [] }: GridPageProps) {
   // Load cars from MongoDB API - run only on client side if no initial cars
   useEffect(() => {
     if (initialCars.length === 0) {
-      console.log('GridPage useEffect triggered on client side - no initial cars');
       setLoading(true);
       
       async function loadCars() {
         try {
-          console.log('Starting to load cars...');
           const carsData = await getAllCarsFromStorage();
-          console.log('Cars data received in GridPage:', carsData);
-          console.log('Number of cars loaded:', carsData.length);
-          console.log('Cars details:', carsData.map(car => ({ id: car.id, name: car.name, brand: car.brand })));
           setCars(carsData);
         } catch (error) {
-          console.error("Error loading cars:", error);
+          console.error("[GridPage] Error loading cars:", error);
         } finally {
           setLoading(false);
         }
       }
       loadCars();
-    } else {
-      console.log('Using initial cars from server:', initialCars.length);
     }
   }, [initialCars]);
 
   // Filter cars based on search criteria
   const filteredCars = useMemo(() => {
-    console.log('Filtering cars:', { carsCount: cars.length, filters: searchFilters });
-    const filtered = filterCars(cars, searchFilters);
-    console.log('Filtered cars:', { filteredCount: filtered.length });
-    return filtered;
+    return filterCars(cars, searchFilters);
   }, [cars, searchFilters]);
 
   const handleSearch = (filters: { carName: string; carModel: string }) => {

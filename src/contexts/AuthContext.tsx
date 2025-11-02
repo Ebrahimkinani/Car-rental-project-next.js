@@ -39,7 +39,6 @@ export function AuthProvider({ children }: AuthProviderProps) {
       
       // Check if user exists
       if (!result.user) {
-        console.log('📋 AuthContext: No user in /api/me response');
         setState(prev => ({
           ...prev,
           user: null,
@@ -78,7 +77,6 @@ export function AuthProvider({ children }: AuthProviderProps) {
         updatedAt: new Date(),
       };
       
-      console.log('✅ AuthContext: User loaded successfully:', userData.email);
       setState(prev => ({
         ...prev,
         user: userData as any,
@@ -87,7 +85,7 @@ export function AuthProvider({ children }: AuthProviderProps) {
       }));
       
     } catch (error) {
-      console.error('❌ Error loading user data from session:', error);
+      console.error('[AuthContext] Error loading user data from session:', error);
       setState(prev => ({
         ...prev,
         user: null,
@@ -113,8 +111,6 @@ export function AuthProvider({ children }: AuthProviderProps) {
     try {
       setState(prev => ({ ...prev, loading: true, error: null }));
       
-      console.log('🔐 Starting login for:', email);
-      
       // Call MongoDB-based login API
       const response = await fetch('/api/auth/login', {
         method: 'POST',
@@ -126,7 +122,6 @@ export function AuthProvider({ children }: AuthProviderProps) {
       });
 
       const result = await response.json();
-      console.log('📥 Login API response:', { ok: response.ok, user: result.user?.role });
 
       if (!response.ok) {
         throw new Error(result.error || 'Login failed');
@@ -138,43 +133,30 @@ export function AuthProvider({ children }: AuthProviderProps) {
         const staffRoles = ['admin', 'manager', 'employee'];
         let redirectPath = '/';
         
-        // Debug logging
-        console.log('🔍 Login response user data:', result.user);
-        console.log('🔍 User role:', result.user.role, 'Type:', typeof result.user.role);
-        console.log('🔍 Staff roles:', staffRoles);
-        console.log('🔍 Is staff?', staffRoles.includes(result.user.role));
-        
         // Check if user is staff FIRST - this takes priority over custom redirects
         if (staffRoles.includes(result.user.role)) {
-          console.log(`✅ User is staff (${result.user.role}), redirecting to dashboard`);
           redirectPath = '/admin/dashboard';
           // Clear any custom redirect as it's not applicable for staff
           if (window.__postLoginRedirect) {
-            console.log(`⚠️ Clearing custom redirect for staff user`);
             delete window.__postLoginRedirect;
           }
         } else {
           // For non-staff users, check if there's a custom redirect URL
           const customRedirect = window.__postLoginRedirect;
           if (customRedirect) {
-            console.log(`🎯 Using custom redirect for non-staff: ${customRedirect}`);
             redirectPath = customRedirect;
             // Clear the redirect after using it
             delete window.__postLoginRedirect;
           } else {
-            console.log(`ℹ️ User is not staff (${result.user.role}), redirecting to home`);
             redirectPath = '/';
           }
         }
         
-        console.log(`🚀 Redirecting ${result.user.role} to ${redirectPath}`);
-        
         // Load user data FIRST before redirecting to ensure admin layout has access to user
         try {
           await loadUserDataFromSession();
-          console.log('✅ User data loaded successfully');
         } catch (err) {
-          console.error('❌ Error loading user data:', err);
+          console.error('[AuthContext] Error loading user data:', err);
           // Continue with redirect anyway - middleware will catch unauthorized access
         }
         
@@ -182,13 +164,12 @@ export function AuthProvider({ children }: AuthProviderProps) {
         router.push(redirectPath);
         return; // Exit early to prevent any further execution
       } else {
-        console.log('❌ No user data in login response');
         // Load user data from session as fallback
         await loadUserDataFromSession();
       }
       
     } catch (error) {
-      console.error('❌ Login error:', error);
+      console.error('[AuthContext] Login error:', error);
       const errorMessage = error instanceof Error ? error.message : 'Login failed';
       setState(prev => ({ ...prev, loading: false, error: errorMessage }));
       throw error;
@@ -216,7 +197,6 @@ export function AuthProvider({ children }: AuthProviderProps) {
         throw new Error(result.error || 'Registration failed');
       }
 
-      console.log('✅ Registration successful, user data:', result.user);
       
       // If user data is returned, use it directly
       if (result.user) {
@@ -242,16 +222,13 @@ export function AuthProvider({ children }: AuthProviderProps) {
           loading: false,
           error: null,
         }));
-        
-        console.log('✅ User state updated after registration');
       } else {
         // Fallback: load user data from session
-        console.log('⚠️ No user data in response, loading from session');
         await loadUserDataFromSession();
       }
       
     } catch (error) {
-      console.error('❌ Registration error:', error);
+      console.error('[AuthContext] Registration error:', error);
       const errorMessage = error instanceof Error ? error.message : 'Registration failed';
       setState(prev => ({ ...prev, loading: false, error: errorMessage }));
       throw error;

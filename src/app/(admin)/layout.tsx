@@ -39,6 +39,7 @@ export default function AdminGroupLayout({ children }: { children: React.ReactNo
       router.push('/no-access');
       return;
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [user, loading, router]);
 
   // Show loading state while checking auth

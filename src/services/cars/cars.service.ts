@@ -25,35 +25,29 @@ export async function getAllCarsFromStorage(): Promise<Car[]> {
       ? '' // Client-side: use relative URL
       : process.env.NEXT_PUBLIC_APP_URL || `http://localhost:${process.env.PORT || 3000}`; // Server-side: use absolute URL
     
-    console.log('Fetching cars from:', `${baseUrl}/api/cars`);
     const response = await fetch(`${baseUrl}/api/cars`);
-    console.log('Response status:', response.status);
-    console.log('Response ok:', response.ok);
     
     // Check if response is ok and content type is JSON
     if (!response.ok) {
-      console.error(`Error loading cars: ${response.status} ${response.statusText}`);
+      console.error("[CarsService] Error loading cars:", `${response.status} ${response.statusText}`);
       return [];
     }
     
     const contentType = response.headers.get('content-type');
     if (!contentType || !contentType.includes('application/json')) {
-      console.error('Error loading cars: Response is not JSON');
+      console.error("[CarsService] Error loading cars: Response is not JSON");
       return [];
     }
     
     const result = await response.json();
-    console.log('API response:', result);
     
     if (!result.success) {
-      console.error("Error loading cars:", result.error);
+      console.error("[CarsService] Error loading cars:", result.error);
       return [];
     }
-    
-    console.log('Cars loaded successfully:', result.data.length);
     return result.data;
   } catch (error) {
-    console.error("Error loading cars:", error);
+    console.error("[CarsService] Error loading cars:", error);
     return [];
   }
 }
@@ -134,8 +128,6 @@ export function getAllCars(): Car[] {
  */
 export async function createCar(carData: Omit<Car, "id" | "createdAt" | "updatedAt">): Promise<Car> {
   try {
-    console.log('Creating car with data:', carData);
-    
     const response = await fetch('/api/cars', {
       method: 'POST',
       headers: {
@@ -143,8 +135,6 @@ export async function createCar(carData: Omit<Car, "id" | "createdAt" | "updated
       },
       body: JSON.stringify(carData),
     });
-    
-    console.log('Response status:', response.status, response.statusText);
     
     // Try to parse response as JSON
     let result;
@@ -164,10 +154,9 @@ export async function createCar(carData: Omit<Car, "id" | "createdAt" | "updated
       throw new Error(result.error || 'Failed to create car');
     }
     
-    console.log('Car created successfully:', result.data);
     return result.data;
   } catch (error) {
-    console.error("Error creating car:", error);
+    console.error("[CarsService] Error creating car:", error);
     throw error;
   }
 }
@@ -273,33 +262,29 @@ export async function getCarsByCategoryFromStorage(categoryId: string): Promise<
       ? '' // Client-side: use relative URL
       : process.env.NEXT_PUBLIC_APP_URL || `http://localhost:${process.env.PORT || 3000}`; // Server-side: use absolute URL
     
-    console.log('Fetching cars by category from:', `${baseUrl}/api/cars/category/${categoryId}`);
     const response = await fetch(`${baseUrl}/api/cars/category/${categoryId}`);
     
     // Check if response is ok and content type is JSON
     if (!response.ok) {
-      console.error(`Error loading cars by category: ${response.status} ${response.statusText}`);
+      console.error("[CarsService] Error loading cars by category:", `${response.status} ${response.statusText}`);
       return [];
     }
     
     const contentType = response.headers.get('content-type');
     if (!contentType || !contentType.includes('application/json')) {
-      console.error('Error loading cars by category: Response is not JSON');
+      console.error("[CarsService] Error loading cars by category: Response is not JSON");
       return [];
     }
     
     const result = await response.json();
     
     if (!result.success) {
-      console.error("Error loading cars by category:", result.error);
+      console.error("[CarsService] Error loading cars by category:", result.error);
       return [];
     }
-    
-    // API route already transforms the cars, so use them directly
-    console.log('Cars by category loaded successfully:', result.data.length);
     return result.data;
   } catch (error) {
-    console.error("Error loading cars by category:", error);
+    console.error("[CarsService] Error loading cars by category:", error);
     return [];
   }
 }

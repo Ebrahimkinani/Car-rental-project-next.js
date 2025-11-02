@@ -6,6 +6,7 @@
 "use client";
 
 import { useState } from 'react';
+import Image from 'next/image';
 import { User } from '@/types';
 import { Button } from '@/components/ui/Button';
 import { getUserInitials } from '@/lib/profile-utils';
@@ -32,11 +33,13 @@ export function ProfileHeader({ user, onEditClick, isEditing = false }: ProfileH
       <div className="flex flex-col sm:flex-row items-start sm:items-center space-y-4 sm:space-y-0 sm:space-x-6">
         {/* Avatar */}
         <div className="relative">
-          <div className="w-24 h-24 rounded-full bg-gradient-to-br from-primary-500 to-purple-600 flex items-center justify-center text-white text-2xl font-bold shadow-lg">
+          <div className="w-24 h-24 rounded-full bg-gradient-to-br from-primary-500 to-purple-600 flex items-center justify-center text-white text-2xl font-bold shadow-lg overflow-hidden">
             {user.avatar && !imageError ? (
-              <img
+              <Image
                 src={user.avatar}
                 alt={displayName}
+                width={96}
+                height={96}
                 className="w-full h-full rounded-full object-cover"
                 onError={handleImageError}
               />

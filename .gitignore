@@ -41,3 +41,21 @@ next-env.d.ts
 *.swo
 *~
 
+# environment files
+.env.local
+.env
+.env.production
+# dependencies
+node_modules/
+
+# builds
+.next/
+dist/
+
+# environment files (DO NOT UPLOAD)
+.env.local
+.env
+.env.production
+
+# system files
+.DS_Store

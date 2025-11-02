@@ -100,7 +100,7 @@ export async function POST(request: NextRequest) {
       // status is set to 'active' by default in createUser
     });
     
-    console.log(`✅ Created employee: ${fullName} (${email}) with role: ${role}`);
+    // Employee created successfully
     
     return NextResponse.json({
       success: true,

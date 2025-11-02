@@ -48,7 +48,7 @@ export default function BrandSearch({ onSearch, brandId, cars }: BrandSearchProp
       carName: carName.value,
       carModel: carModel.value,
     };
-    console.log("BRAND SEARCH:", payload);
+    // Brand search payload logged for debugging
     
     // Call the onSearch callback if provided
     if (onSearch) {

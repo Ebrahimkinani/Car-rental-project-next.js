@@ -25,8 +25,7 @@ export default function ExpensesTrend({ points }: ExpensesTrendProps) {
   const [showAverage, setShowAverage] = useState(true);
   const [showPeak, setShowPeak] = useState(true);
   
-  // Debug logging
-  console.log('ExpensesTrend received points:', points);
+  // ExpensesTrend points received
   
   // Calculate statistics
   const stats = useMemo(() => {

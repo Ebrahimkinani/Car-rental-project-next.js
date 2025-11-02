@@ -32,25 +32,18 @@ export interface VerifiedUser {
  */
 export async function verifySession(request: NextRequest): Promise<VerifiedUser | null> {
   try {
-    console.log('🔍 VERIFY_SESSION: Starting verification');
     // Get JWT session payload (this verifies JWT and checks MongoDB)
     const sessionPayload = await getSessionFromRequest(request);
     
     if (!sessionPayload) {
-      console.log('❌ VERIFY_SESSION: No session payload found');
       return null;
     }
-    
-    console.log('✅ VERIFY_SESSION: Session payload found for', sessionPayload.email);
 
     // Get user from database using the userId from JWT payload
     const user = await findUserById(sessionPayload.userId);
     if (!user) {
-      console.log('❌ VERIFY_SESSION: User not found in database');
       return null;
     }
-
-    console.log('✅ VERIFY_SESSION: User found in database:', user.email);
     
     // Return normalized user data
     // CRITICAL: Normalize role and status to lowercase for consistent comparisons

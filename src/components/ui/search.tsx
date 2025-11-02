@@ -39,7 +39,7 @@ export default function CarSearchBar({ onSearch }: CarSearchBarProps) {
       carName: customSearch,
       carModel: carModel.value,
     };
-    console.log("SEARCH:", payload);
+    // Search payload logged for debugging
     
     // Call the onSearch callback if provided
     if (onSearch) {

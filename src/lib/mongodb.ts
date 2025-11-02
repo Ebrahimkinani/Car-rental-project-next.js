@@ -41,7 +41,7 @@ export async function dbConnect() {
     cached!.promise = mongoose
       .connect(MONGODB_URI!, opts)
       .then((mongooseInstance) => {
-        console.log(
+        console.warn(
           "✅ Connected to MongoDB:",
           mongooseInstance.connection.host,
           "/",

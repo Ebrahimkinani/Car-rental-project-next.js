@@ -10,7 +10,7 @@ export async function initializeDatabase() {
   try {
     await dbConnect();
     
-    console.log('Database connected successfully');
+    console.warn('Database connected successfully');
     
     // Check if categories already exist
     const categoriesCount = await Category.countDocuments();
@@ -75,10 +75,10 @@ export async function initializeDatabase() {
       ];
       
       await Category.insertMany(defaultCategories);
-      console.log('Default categories inserted successfully');
+      console.warn('Default categories inserted successfully');
     }
     
-    console.log('Categories initialization completed');
+    console.warn('Categories initialization completed');
     
     // Check if cars already exist
     const carsCount = await Car.countDocuments();
@@ -257,13 +257,13 @@ export async function initializeDatabase() {
         ];
         
         await Car.insertMany(sampleCars);
-        console.log('Sample cars inserted successfully');
+        console.warn('Sample cars inserted successfully');
       } else {
-        console.log('No categories found, skipping car initialization');
+        console.warn('No categories found, skipping car initialization');
       }
     }
     
-    console.log('Database initialization completed successfully');
+    console.warn('Database initialization completed successfully');
     return true;
   } catch (error) {
     console.error('Error initializing database:', error);

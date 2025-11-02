@@ -181,7 +181,8 @@ export async function POST(request: NextRequest) {
     
     // Log the data being saved for debugging
     const logData = { ...carData, categoryId: carData.categoryId.toString() };
-    console.log('Creating car with data:', JSON.stringify(logData, null, 2));
+    // eslint-disable-next-line no-console
+    console.warn('[CarsAPI] Creating car with data:', JSON.stringify(logData, null, 2));
     
     // Validate the car data before saving
     if (!carData.name || !carData.model || !carData.brand || !carData.categoryId) {

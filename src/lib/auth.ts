@@ -136,10 +136,8 @@ export async function getSessionFromCookie(): Promise<SessionPayload | null> {
 export async function getSessionFromRequest(request: NextRequest): Promise<SessionPayload | null> {
   try {
     const sessionToken = request.cookies.get(SESSION_COOKIE_NAME)?.value;
-    console.log('Session token from request:', sessionToken ? 'Present' : 'Missing');
 
     if (!sessionToken) {
-      console.log('No session token found in request');
       return null;
     }
 
@@ -149,9 +147,8 @@ export async function getSessionFromRequest(request: NextRequest): Promise<Sessi
     let payload: SessionPayload;
     try {
       payload = verifyJWTToken(sessionToken);
-      console.log('JWT payload verified:', { userId: payload.userId, email: payload.email });
     } catch (error) {
-      console.error('Failed to verify JWT token:', error);
+      console.error('[auth.ts] Failed to verify JWT token:', error);
       return null;
     }
 
@@ -163,11 +160,8 @@ export async function getSessionFromRequest(request: NextRequest): Promise<Sessi
     });
 
     if (!session) {
-      console.log('No active session found in MongoDB for token');
       return null;
     }
-
-    console.log('Session found and active:', { userId: session.userId, isActive: session.isActive });
     return payload;
   } catch (error) {
     console.error('Failed to get session from request:', error);

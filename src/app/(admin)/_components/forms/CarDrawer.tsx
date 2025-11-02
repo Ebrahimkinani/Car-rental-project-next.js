@@ -1,3 +1,4 @@
+/* eslint-disable @next/next/no-img-element */
 "use client";
 
 import { useEffect, useRef, useState } from "react";
@@ -127,9 +128,10 @@ export default function CarDrawer({ open, initial, onClose, onSave }: Props) {
                   model.seats > 0 &&
                   model.doors > 0;
 
-  // Debug logging (remove in production)
+  // Debug logging (only in development)
   if (process.env.NODE_ENV === 'development' && !canSave) {
-    console.log('CarDrawer Debug - Save button disabled:', {
+    // eslint-disable-next-line no-console
+    console.warn('[CarDrawer] Save button disabled:', {
       name: model.name,
       nameLength: model.name.trim().length,
       model: model.model,

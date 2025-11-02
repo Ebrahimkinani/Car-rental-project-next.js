@@ -11,7 +11,7 @@ import mongoose from 'mongoose';
 export async function POST(request: NextRequest) {
   try {
     // Verify session token
-    const { user: authUser } = await requireAuth(request, ['admin', 'manager']);
+    await requireAuth(request, ['admin', 'manager']);
 
     const body = await request.json();
     const { userId, role } = body;
@@ -62,15 +62,7 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    // Log role update for monitoring
-    console.log('✅ User role updated:', {
-      userId: updatedUser._id.toString(),
-      email: updatedUser.email,
-      oldRole: updatedUser.role,
-      newRole: role,
-      updatedBy: authUser.email,
-      timestamp: new Date().toISOString()
-    });
+    // User role updated - logging for monitoring
 
     return NextResponse.json({
       success: true,

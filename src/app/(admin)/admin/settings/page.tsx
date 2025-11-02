@@ -68,7 +68,8 @@ export default function SettingsPage() {
 
   function save() {
     // Replace with real API call
-    console.log("Saving settings", model);
+    // eslint-disable-next-line no-console
+    console.warn("[SettingsPage] Saving settings", model);
     setInitial(model);
     alert("Settings saved.");
   }
@@ -137,7 +138,8 @@ export default function SettingsPage() {
           <div className="sm:col-span-2">
             <div className="rounded border p-3">
               <div className="text-xs text-zinc-500 mb-2">Logo Preview</div>
-              <img src={model.branding.logoUrl} alt="Logo preview" className="h-12" />
+              {/* eslint-disable-next-line @next/next/no-img-element */}
+              <img src={model.branding.logoUrl} alt="Logo preview" className="h-12" width={48} height={48} />
             </div>
           </div>
         ) : null}

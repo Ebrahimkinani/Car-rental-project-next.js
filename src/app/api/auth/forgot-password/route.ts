@@ -55,8 +55,8 @@ export async function POST(request: NextRequest) {
     const resetLink = `${process.env.NEXT_PUBLIC_BASE_URL || 'http://localhost:3000'}/auth/reset-password?token=${token}`;
     
     if (process.env.NODE_ENV === 'development') {
-      console.log('🔗 Password Reset Link:', resetLink);
-      console.log('📧 Would send email to:', user.email);
+      console.warn('[forgot-password] Password Reset Link:', resetLink);
+      console.warn('[forgot-password] Would send email to:', user.email);
     }
 
     // In production, you would send an email here:

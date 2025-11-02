@@ -31,14 +31,14 @@ function HeartIcon({ filled, className = "" }: { filled: boolean; className?: st
 }
 
 export default function CarGrid({ cars, className = "" }: CarGridProps) {
-  console.log('CarGrid received cars:', cars.length, cars);
   const { isFavorite, addToFavorites, removeFromFavorites, loadFavoritesFromServer } = useFavorites();
   const [togglingFavorites, setTogglingFavorites] = useState<Set<string>>(new Set());
 
   // Load favorites when component mounts
   useEffect(() => {
     loadFavoritesFromServer();
-  }, [loadFavoritesFromServer]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []); // loadFavoritesFromServer is stable from context
 
   const handleToggleFavorite = async (e: React.MouseEvent, carId: string) => {
     e.preventDefault();
@@ -51,10 +51,8 @@ export default function CarGrid({ cars, className = "" }: CarGridProps) {
       
       if (isFavorite(carId)) {
         await removeFromFavorites(carId);
-        console.log('Removed from favorites');
       } else {
         await addToFavorites(carId);
-        console.log('Added to favorites');
       }
     } catch (error) {
       console.error('Error toggling favorite:', error);

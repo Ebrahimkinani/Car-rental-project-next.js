@@ -26,7 +26,7 @@ export async function initializeDatabase() {
     await db.collection('cars').createIndex({ fuelType: 1 });
     await db.collection('cars').createIndex({ transmission: 1 });
     
-    console.log('Database indexes created successfully');
+    // Database indexes created successfully
     
     // Check if categories already exist
     const categoriesCount = await db.collection('categories').countDocuments();
@@ -140,7 +140,7 @@ export async function initializeDatabase() {
       ];
       
       await db.collection('categories').insertMany(defaultCategories);
-      console.log('Default categories inserted successfully');
+      // Default categories inserted successfully
     }
     
     // Check if cars already exist
@@ -365,11 +365,11 @@ export async function initializeDatabase() {
         ];
         
         await db.collection('cars').insertMany(sampleCars);
-        console.log('Sample cars inserted successfully');
+        // Sample cars inserted successfully
       }
     }
     
-    console.log('Database initialization completed successfully');
+    // Database initialization completed successfully
     return true;
   } catch (error) {
     console.error('Error initializing database:', error);

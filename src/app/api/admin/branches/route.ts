@@ -25,7 +25,7 @@ export async function GET() {
         { name: 'Al Khor', city: 'Al Khor', country: 'Qatar' }
       ];
       await branches.insertMany(defaultBranches);
-      console.log('✅ Seeded default branches');
+      // Default branches seeded
     }
 
     const allBranches = await branches.find({}).toArray();

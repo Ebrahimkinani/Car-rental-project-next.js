@@ -48,8 +48,6 @@ export async function POST(request: NextRequest) {
     await dbConnect();
     const { carId } = await request.json();
     
-    console.log('Favorites API - Received request:', { carId });
-    
     if (!carId) {
       return NextResponse.json(
         { error: 'Car ID is required' },
@@ -59,7 +57,6 @@ export async function POST(request: NextRequest) {
     
     // Get user from authenticated request
     const session = await getSessionFromRequest(request);
-    console.log('Favorites API - Session:', session ? 'Found' : 'Not found');
     
     if (!session) {
       return NextResponse.json(

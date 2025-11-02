@@ -43,7 +43,6 @@ export default function LoginClient() {
       // Store redirect URL before login
       if (redirectTo && redirectTo !== '/auth/login') {
         window.__postLoginRedirect = redirectTo;
-        console.log(`🔗 Storing redirect URL: ${redirectTo}`);
       }
       
       await login(formData.email, formData.password);
@@ -59,9 +58,7 @@ export default function LoginClient() {
 
   const handleGoogleLogin = async () => {
     try {
-      console.log('Starting Google login...');
       await loginWithGoogle();
-      console.log('Google login successful, redirecting...');
       // Google login always defaults to user role, redirect to home
       router.push('/');
     } catch (error: any) {

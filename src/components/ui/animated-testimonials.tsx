@@ -51,7 +51,7 @@ export const AnimatedTestimonials = ({
       // Use a deterministic formula based on index to generate consistent rotations
       return ((index * 17) % 21) - 10; // This gives values between -10 and 10
     });
-  }, [testimonials.length]);
+  }, [testimonials]);
 
   const getRotateY = (index: number) => {
     return rotations[index];

@@ -42,7 +42,7 @@ export default function CategoriesPage() {
       if (result.success) {
         setRows(result.data);
         if (result.message) {
-          console.log("ℹ️", result.message);
+          // Category message received
         }
       } else {
         console.error("Error loading categories:", result.error);

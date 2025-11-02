@@ -12,15 +12,11 @@ import { createSession } from '@/lib/auth';
 
 export async function POST(request: NextRequest) {
   try {
-    console.log('🔐 LOGIN: Starting login process');
     const body = await request.json();
     const { email, password } = body;
 
-    console.log('🔐 LOGIN: Validating input for', email);
-
     // Validate input
     if (!email || !password) {
-      console.log('❌ LOGIN: Missing email or password');
       return NextResponse.json(
         { ok: false, error: 'Email and password are required' },
         { status: 400 }
@@ -69,7 +65,6 @@ export async function POST(request: NextRequest) {
     const userAgent = request.headers.get('user-agent') || '';
 
     // Create session (using JWT-based createSession from lib/auth)
-    console.log('🔐 LOGIN: Creating session for user', user._id.toString());
     const sessionToken = await createSession(
       user._id.toString(),
       user.email,
@@ -78,7 +73,6 @@ export async function POST(request: NextRequest) {
       ip,
       userAgent
     );
-    console.log('✅ LOGIN: Session created, token length:', sessionToken.length);
 
     // Return user data (without password hash)
     // CRITICAL: Normalize role and status to lowercase for consistent comparisons
@@ -94,7 +88,6 @@ export async function POST(request: NextRequest) {
       },
     });
 
-    console.log('🔐 LOGIN: Setting session cookie');
     // Set HTTP-only cookie on the response
     response.cookies.set('session', sessionToken, {
       httpOnly: true,
@@ -104,7 +97,6 @@ export async function POST(request: NextRequest) {
       maxAge: 7 * 24 * 60 * 60, // 7 days in seconds
     });
 
-    console.log('✅ LOGIN: Cookie set, returning response');
     return response;
   } catch (error: any) {
     console.error('❌ LOGIN ERROR:', error);

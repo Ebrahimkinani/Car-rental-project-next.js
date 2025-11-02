@@ -1,5 +1,5 @@
 "use client";
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback } from "react";
 import { StatusPill } from "../ui/StatusPill";
 
 // Types matching the API response
@@ -51,7 +51,7 @@ export default function BookingsTable({ scope, query, carType, dateFrom, dateTo 
   const pageSize = 10;
 
   // Fetch bookings from API
-  const fetchBookings = async (pageNum: number = 1) => {
+  const fetchBookings = useCallback(async (pageNum: number = 1) => {
     try {
       setLoading(true);
       setError(null);
@@ -80,19 +80,19 @@ export default function BookingsTable({ scope, query, carType, dateFrom, dateTo 
       setPageCount(data.pageCount);
       setTotal(data.total);
     } catch (err) {
-      console.error('Error fetching bookings:', err);
+      console.error('[AdminBookingTable] Error fetching bookings:', err);
       setError(err instanceof Error ? err.message : 'Failed to fetch bookings');
       setBookings([]);
     } finally {
       setLoading(false);
     }
-  };
+  }, [scope, query, carType, dateFrom, dateTo]);
 
   // Fetch data when filters change
   useEffect(() => {
     fetchBookings(1);
     setPage(1);
-  }, [scope, query, carType, dateFrom, dateTo]);
+  }, [fetchBookings]);
 
   // Handle pagination
   const handlePageChange = (newPage: number) => {
@@ -103,18 +103,16 @@ export default function BookingsTable({ scope, query, carType, dateFrom, dateTo 
 
   // Handle action buttons
   const handleView = (bookingId: string) => {
+    console.warn("[AdminBookingTable] view booking clicked", bookingId);
     // TODO: Implement view booking modal/page
-    console.log('View booking:', bookingId);
   };
 
-  const handleEdit = (bookingId: string) => {
+  const handleEdit = (_bookingId: string) => {
     // TODO: Implement edit booking modal/page
-    console.log('Edit booking:', bookingId);
   };
 
-  const handleDelete = (bookingId: string) => {
+  const handleDelete = (_bookingId: string) => {
     // TODO: Implement delete booking with confirmation
-    console.log('Delete booking:', bookingId);
   };
 
   if (loading) {

@@ -12,7 +12,7 @@ import { createNotification } from '@/lib/notifications';
 
 export async function POST(request: NextRequest) {
   try {
-    console.log('🔐 CHANGE PASSWORD: Starting password change process');
+    // Starting password change process
 
     // Get current user from session
     const session = await getSessionFromRequest(request);
@@ -86,7 +86,7 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    console.log('✅ CHANGE PASSWORD: Password updated successfully for user', session.userId);
+    // Password updated successfully
 
     // Best-effort: notify user their password was changed
     (async () => {

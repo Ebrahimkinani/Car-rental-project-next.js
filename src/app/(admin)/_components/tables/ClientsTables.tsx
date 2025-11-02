@@ -41,7 +41,10 @@ export default function ClientsTable({
   // Determine if we're using external or internal pagination/sorting
   const useExternal = onSort && onPageChange;
   
-  const currentSort = useExternal ? { key: sortBy as SortKey, dir: sortOrder as SortDirection } : internalSort;
+  const currentSort = useMemo(() => 
+    useExternal ? { key: sortBy as SortKey, dir: sortOrder as SortDirection } : internalSort,
+    [useExternal, sortBy, sortOrder, internalSort]
+  );
   const currentPage = useExternal ? page : internalPage;
 
   const sorted = useMemo(() => {

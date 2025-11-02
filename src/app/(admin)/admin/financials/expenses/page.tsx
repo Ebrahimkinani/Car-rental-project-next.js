@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback } from "react";
 import type { Expense, ExpensesResponse, DailyPoint, ExpensesKPIs } from "../../../_components/types/ExpenseTypes";
 import ExpenseFilters from "../../../_components/filters/ExpensesFilters";
 import { StatsGrid } from "@/components/ui/stats-card";
@@ -52,7 +52,7 @@ export default function ExpensesPage() {
   const [isAddModalOpen, setIsAddModalOpen] = useState(false);
 
   // Fetch data from API
-  const fetchExpenses = async () => {
+  const fetchExpenses = useCallback(async () => {
     setLoading(true);
     setError("");
     
@@ -92,12 +92,12 @@ export default function ExpensesPage() {
     } finally {
       setLoading(false);
     }
-  };
+  }, [query, category, vendor, method, status, dateFrom, dateTo, minAmt, maxAmt, page]);
 
   // Fetch data when filters change
   useEffect(() => {
     fetchExpenses();
-  }, [query, category, vendor, method, status, dateFrom, dateTo, minAmt, maxAmt, page]);
+  }, [fetchExpenses]);
 
   // Handle successful expense creation
   const handleExpenseAdded = (_newExpense: Expense) => {
