@@ -184,10 +184,10 @@ export function AnimatedTestimonials({
         {/* Logo cloud */}
         {trustedCompanies.length > 0 && (
           <motion.div variants={itemVariants} initial="hidden" animate={controls} className="mt-12 text-center">
-            <h3 className="text-xs font-medium text-muted-foreground mb-4 md:text-sm">{trustedCompaniesTitle}</h3>
+            <h3 className="text-xs font-medium text-muted-foreground mb-4 md:text-xl lg:text-2xl">{trustedCompaniesTitle}</h3>
             <div className="flex flex-wrap justify-center gap-x-8 gap-y-4">
               {trustedCompanies.map((company) => (
-                <div key={company} className="text-sm font-semibold text-muted-foreground/50 md:text-lg">
+                <div key={company} className="text-sm font-semibold text-muted-foreground/50 md:text-2xl lg:text-3xl">
                   {company}
                 </div>
               ))}
