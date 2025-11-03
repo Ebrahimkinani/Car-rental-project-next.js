@@ -2,6 +2,8 @@ import { NextRequest, NextResponse } from 'next/server';
 import { dbConnect } from '@/lib/mongodb';
 import { requireAuth } from '@/lib/auth/requireAuth';
 import { Booking } from '@/models/Booking';
+import { Car } from '@/models/Car';
+import { Category } from '@/models/Category';
 
 // Types for the API response
 export interface AdminBookingRow {
@@ -78,26 +80,75 @@ export async function GET(request: NextRequest) {
       }
     }
 
-    // Search filter - will be applied after population
-    let searchRegex: RegExp | null = null;
-    if (search.trim()) {
-      searchRegex = new RegExp(search.trim(), 'i');
+    // ✅ NEW: Get category ID if carType filter is applied (filter BEFORE fetching)
+    let categoryId: string | null = null;
+    if (carType !== 'All') {
+      const category = await Category.findOne({ name: carType }).lean();
+      if (category) {
+        categoryId = String((category as any)._id);
+      }
     }
 
-    // Car type filter - will be applied after population
-    let carTypeFilter: string | null = null;
-    if (carType !== 'All') {
-      carTypeFilter = carType;
+    // ✅ NEW: If category filter exists, filter by cars with that category
+    if (categoryId) {
+      const carsWithCategory = await Car.find({ categoryId }).select('_id').lean();
+      const carIds = carsWithCategory.map(car => car._id);
+      if (carIds.length > 0) {
+        query.carId = { $in: carIds };
+      } else {
+        // No cars with this category, return empty result
+        return NextResponse.json({
+          data: [],
+          page,
+          pageCount: 0,
+          total: 0
+        });
+      }
     }
+
+    // ✅ NEW: Add search filter to MongoDB query if possible (for car fields)
+    // Note: Search for userId/bookingNumber still needs to be done after population
+    let needsPostFilterSearch = false;
+    if (search.trim()) {
+      // Try to match against car fields first
+      const searchRegex = new RegExp(search.trim(), 'i');
+      const matchingCars = await Car.find({
+        $or: [
+          { brand: searchRegex },
+          { model: searchRegex },
+          { licensePlate: searchRegex }
+        ]
+      }).select('_id').lean();
+      
+      if (matchingCars.length > 0) {
+        // Filter bookings by matching car IDs
+        const matchingCarIds = matchingCars.map(car => car._id);
+        if (query.carId && '$in' in query.carId) {
+          // Combine with existing carId filter
+          const existingCarIds = query.carId.$in as any[];
+          query.carId = { $in: matchingCarIds.filter(id => existingCarIds.includes(id)) };
+        } else {
+          query.carId = { $in: matchingCarIds };
+        }
+      } else {
+        // No matching cars, but search might be for userId/bookingNumber
+        // We'll filter those after population
+        needsPostFilterSearch = true;
+      }
+    }
+
+    // ✅ NEW: Get total count BEFORE pagination (accurate count!)
+    const total = await Booking.countDocuments(query);
 
     // Calculate pagination
     const skip = (page - 1) * limit;
 
-    // Fetch bookings with population
+    // Fetch bookings with population (now with proper filters applied)
     const bookings = await Booking.find(query)
       .populate({
         path: 'carId',
         model: 'Car',
+        select: 'brand model licensePlate categoryId',
         populate: {
           path: 'categoryId',
           model: 'Category',
@@ -109,26 +160,21 @@ export async function GET(request: NextRequest) {
       .limit(limit)
       .lean();
 
-    // Transform and filter data
+    // Transform and apply remaining filters (userId, bookingNumber search)
     const transformedBookings: AdminBookingRow[] = [];
+    const searchRegex = search.trim() && needsPostFilterSearch 
+      ? new RegExp(search.trim(), 'i') 
+      : null;
 
     for (const booking of bookings) {
       const car = booking.carId as any;
       const category = car?.categoryId as any;
 
-      // Apply car type filter
-      if (carTypeFilter && category?.name !== carTypeFilter) {
-        continue;
-      }
-
-      // Apply search filter
-      if (searchRegex) {
+      // ✅ Apply search filter for userId/bookingNumber (if needed)
+      if (searchRegex && needsPostFilterSearch) {
         const searchText = [
           generateBookingNumber((booking._id as any).toString()),
-          booking.userId, // TODO: Replace with actual user name when user schema is updated
-          car?.brand || '',
-          car?.model || '',
-          car?.licensePlate || ''
+          booking.userId || ''
         ].join(' ');
 
         if (!searchRegex.test(searchText)) {
@@ -136,16 +182,13 @@ export async function GET(request: NextRequest) {
         }
       }
 
-      // TODO: Get user details from users collection
-      // For now, using userId as placeholder
-      const userFullName = `User ${booking.userId}`; // TODO: Replace with actual user lookup
-
+      // Transform to API format
       transformedBookings.push({
         id: (booking._id as any).toString(),
         bookingNumber: generateBookingNumber((booking._id as any).toString()),
         client: {
-          id: booking.userId,
-          fullName: userFullName, // TODO: Get from users collection
+          id: booking.userId || '',
+          fullName: `User ${booking.userId}`, // TODO: Get from users collection
           email: '', // TODO: Get from users collection
           phone: '' // TODO: Get from users collection
         },
@@ -164,16 +207,14 @@ export async function GET(request: NextRequest) {
       });
     }
 
-    // Calculate final pagination info
-    const pageCount = Math.ceil(transformedBookings.length / limit);
-    const startIndex = (page - 1) * limit;
-    const paginatedData = transformedBookings.slice(startIndex, startIndex + limit);
+    // ✅ Calculate accurate pagination info
+    const pageCount = Math.ceil(total / limit);
 
     const response: AdminBookingsResponse = {
-      data: paginatedData,
+      data: transformedBookings,
       page,
       pageCount: Math.max(1, pageCount),
-      total: transformedBookings.length
+      total: total // ✅ Accurate total from MongoDB count
     };
 
     return NextResponse.json(response);

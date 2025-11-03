@@ -5,7 +5,11 @@ const nextConfig = {
     optimizePackageImports: ['@headlessui/react', '@heroicons/react', 'lucide-react'],
   },
   images: {
-    unoptimized: true,
+    unoptimized: false, // ✅ Enable optimization
+    formats: ['image/avif', 'image/webp'], // Modern formats
+    deviceSizes: [640, 750, 828, 1080, 1200, 1920, 2048, 3840],
+    imageSizes: [16, 32, 48, 64, 96, 128, 256, 384],
+    minimumCacheTTL: 60, // Cache optimized images for 60 seconds
     remotePatterns: [
       {
         protocol: 'https',
@@ -30,17 +34,6 @@ const nextConfig = {
       os: false,
       path: false,
     };
-    
-    // Handle Firebase modules properly
-    if (!isServer) {
-      config.resolve.alias = {
-        ...config.resolve.alias,
-        'firebase/app': 'firebase/app',
-        'firebase/auth': 'firebase/auth',
-        'firebase/firestore': 'firebase/firestore',
-        'firebase/analytics': 'firebase/analytics',
-      };
-    }
     
     // Optimize webpack cache
     if (dev) {
