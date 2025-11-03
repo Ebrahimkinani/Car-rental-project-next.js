@@ -72,7 +72,7 @@ export default function CarSearchBar({ onSearch }: CarSearchBarProps) {
             placeholder="Search by brand, model, or name..."
             value={customSearch}
             onChange={(e) => setCustomSearch(e.target.value)}
-            className="h-14 min-w-[300px] rounded-full border border-gray-200 bg-white px-5 text-sm text-gray-900 placeholder-gray-500 hover:border-gray-300 focus:border-primary-500 transition-colors outline-none"
+            className="h-14 w-full md:min-w-[300px] rounded-full border border-gray-200 bg-white px-5 text-sm text-gray-900 placeholder-gray-500 hover:border-gray-300 focus:border-primary-500 transition-colors outline-none"
           />
         </Field>
 
@@ -84,19 +84,19 @@ export default function CarSearchBar({ onSearch }: CarSearchBarProps) {
         {/* Search & Reset */}
         <div className="flex flex-col gap-1">
           <span className="text-xs text-gray-500 pl-4 opacity-0">Actions</span>
-          <div className="flex gap-2">
-            <button
-              type="submit"
-              className="h-14 rounded-full px-6 md:px-8 font-medium text-white bg-primary-500 hover:bg-primary-600 transition-colors whitespace-nowrap"
-            >
-              Search
-            </button>
+          <div className="flex gap-2 w-full md:w-auto">
             <button
               type="button"
               onClick={handleReset}
-              className="h-14 rounded-full px-6 md:px-8 font-medium text-gray-700 bg-gray-100 hover:bg-gray-200 transition-colors whitespace-nowrap"
+              className="h-14 flex-1 md:flex-none rounded-full px-6 md:px-8 font-medium text-gray-700 bg-gray-100 hover:bg-gray-200 transition-colors whitespace-nowrap"
             >
               Reset
+            </button>
+            <button
+              type="submit"
+              className="h-14 flex-[2] md:flex-none rounded-full px-6 md:px-8 font-medium text-white bg-primary-500 hover:bg-primary-600 transition-colors whitespace-nowrap"
+            >
+              Search
             </button>
           </div>
         </div>
@@ -130,7 +130,7 @@ function PillSelect({
     <Listbox value={value} onChange={onChange}>
       <div className="relative">
         <Listbox.Button
-          className="h-14 min-w-[210px] rounded-full border border-gray-200 bg-white
+          className="h-14 w-full md:min-w-[210px] rounded-full border border-gray-200 bg-white
                      px-5 pr-10 text-sm text-gray-900 text-left
                      hover:border-primary-500 focus:border-primary-500 transition-colors outline-none"
         >

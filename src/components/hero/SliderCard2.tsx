@@ -38,14 +38,14 @@ export default function SliderCard() {
   };
 
   return (
-    <div className="relative overflow-hidden rounded-[24px] h-[calc(101vh-56px)]">
+    <div className="relative overflow-hidden rounded-[24px] h-[50vh] md:h-[calc(101vh-56px)] p-0 mb-0">
       {/* Smooth horizontal movement */}
       <div
-        className="flex transition-transform duration-[1500ms] ease-[cubic-bezier(0.7,0,0.3,1)]"
+        className="flex transition-transform duration-1500 ease-[cubic-bezier(0.7,0,0.3,1)]"
         style={{ transform: `translateX(-${currentIndex * 100}%)` }}
       >
         {IMAGES.concat(IMAGES[0]).map((image, i) => (
-          <div key={i} className="relative w-full h-[calc(101vh-56px)] flex-shrink-0">
+          <div key={i} className="relative w-full h-[50vh] md:h-[calc(101vh-56px)] shrink-0">
             <Image
               src={image.src}
               alt={image.alt}
@@ -94,7 +94,7 @@ export default function SliderCard() {
       </div>
 
       {/* Center CTA */}
-      <div className="absolute left-1/2 top-1/2 -translate-x-1/2 translate-y-56">
+      <div className="absolute left-1/2 top-1/2 -translate-x-1/2 translate-y-32 md:translate-y-56">
         <button 
           onClick={() => {
             const carGrid = document.getElementById('car-grid');
@@ -102,9 +102,9 @@ export default function SliderCard() {
               carGrid.scrollIntoView({ behavior: 'smooth' });
             }
           }}
-          className="bg-white text-black px-4 py-2 rounded-full text-sm font-light hover:scale-105 transition-transform duration-300"
+          className="bg-white text-black px-3 py-1.5 md:px-4 md:py-2 rounded-full text-xs md:text-sm font-light hover:scale-105 transition-transform duration-300"
         >
-          Book Now <span className="inline-flex items-center justify-center w-9 h-9 bg-primary-500 text-white rounded-full text-base ml-2">↗</span>
+          Book Now <span className="inline-flex items-center justify-center w-7 h-7 md:w-9 md:h-9 bg-primary-500 text-white rounded-full text-sm md:text-base ml-1.5 md:ml-2">↗</span>
         </button>
       </div>
     </div>

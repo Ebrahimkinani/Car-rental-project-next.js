@@ -14,7 +14,7 @@ interface PopularCarsSectionProps {
 function HeartIcon({ filled, className = "" }: { filled: boolean; className?: string }) {
   return (
     <svg
-      className={`w-5 h-5 transition-colors duration-200 ${className}`}
+      className={`w-4 h-4 sm:w-5 sm:h-5 transition-colors duration-200 ${className}`}
       fill={filled ? "#ef4444" : "none"}
       stroke={filled ? "#ef4444" : "#6b7280"}
       strokeWidth={2}
@@ -87,7 +87,7 @@ export default function PopularCarsSection({ className = "" }: PopularCarsSectio
   };
 
   return (
-    <section className={`mt-12 pb-12 ${className}`}>
+    <section className={`pt-[7%] pb-12 ${className}`}>
       <div className="container mx-auto px-4 sm:px-6 lg:px-8">
         {/* Section Header */}
         <div className="mb-6">
@@ -100,7 +100,7 @@ export default function PopularCarsSection({ className = "" }: PopularCarsSectio
         </div>
 
         {/* Horizontal Scroll Container */}
-        <div className="flex overflow-x-auto gap-4 sm:gap-6 pb-4 [-ms-overflow-style:none] [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
+        <div className="flex overflow-x-auto gap-4 sm:gap-6 pt-[7%] md:pt-0 pb-4 [-ms-overflow-style:none] [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
         {cars.map((car) => (
           <Link
             key={car.id}
@@ -129,7 +129,7 @@ export default function PopularCarsSection({ className = "" }: PopularCarsSectio
                 </span>
                 <button 
                   onClick={(e) => handleToggleFavorite(e, car.id)}
-                  className="p-2 rounded-full bg-white/30 backdrop-blur-sm hover:scale-110 transition-all duration-200"
+                  className="p-1.5 sm:p-2 rounded-full bg-white/30 backdrop-blur-sm hover:scale-110 transition-all duration-200"
                   aria-label={isFavorite(car.id) ? "Remove from favorites" : "Add to favorites"}
                 >
                   <HeartIcon filled={isFavorite(car.id)} />
@@ -138,32 +138,32 @@ export default function PopularCarsSection({ className = "" }: PopularCarsSectio
             </div>
 
             {/* Content */}
-            <div className="p-4 space-y-3">
+            <div className="p-3 sm:p-4 space-y-2 sm:space-y-3">
               {/* Car Name & Model */}
               <div>
-                <h3 className="text-lg font-normal text-black line-clamp-1 group-hover:text-primary-500 transition-colors duration-200">
+                <h3 className="text-sm sm:text-lg font-normal text-black line-clamp-1 group-hover:text-primary-500 transition-colors duration-200">
                   {car.name}
                 </h3>
-                <p className="text-xs text-gray-500 group-hover:text-primary-500">{car.model}</p>
+                <p className="text-[10px] sm:text-xs text-gray-500 group-hover:text-primary-500">{car.model}</p>
               </div>
               
               {/* Quick Specs */}
-              <div className="flex items-center gap-3 text-xs text-gray-600 group-hover:text-primary-500 transition-colors">
+              <div className="flex items-center gap-2 sm:gap-3 text-[10px] sm:text-xs text-gray-600 group-hover:text-primary-500 transition-colors">
                 <span className="flex items-center gap-1 group-hover:text-primary-500">
-                  <svg className="w-4 h-4 group-hover:stroke-primary-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <svg className="w-3 h-3 sm:w-4 sm:h-4 group-hover:stroke-primary-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z" />
                   </svg>
                   {car.seats} seats
                 </span>
                 <span className="flex items-center gap-1 group-hover:text-primary-500">
-                  <svg className="w-4 h-4 group-hover:stroke-primary-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <svg className="w-3 h-3 sm:w-4 sm:h-4 group-hover:stroke-primary-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 10V3L4 14h7v7l9-11h-7z" />
                   </svg>
                   {car.transmission === "automatic" ? "Auto" : "Manual"}
                 </span>
                 {car.horsepower && (
                   <span className="flex items-center gap-1 group-hover:text-primary-500">
-                    <svg className="w-4 h-4 group-hover:fill-primary-500" fill="currentColor" viewBox="0 0 20 20">
+                    <svg className="w-3 h-3 sm:w-4 sm:h-4 group-hover:fill-primary-500" fill="currentColor" viewBox="0 0 20 20">
                       <path fillRule="evenodd" d="M11.3 1.046A1 1 0 0112 2v5h4a1 1 0 01.82 1.573l-7 10A1 1 0 018 18v-5H4a1 1 0 01-.82-1.573l7-10a1 1 0 011.12-.38z" clipRule="evenodd" />
                     </svg>
                     {car.horsepower}hp
@@ -173,15 +173,15 @@ export default function PopularCarsSection({ className = "" }: PopularCarsSectio
               
               {/* Rental Price */}
               <div className="flex items-center justify-between pt-2 border-t border-gray-100">
-                <div className="text-2xl font-bold text-primary-500">
+                <div className="text-lg sm:text-2xl font-bold text-primary-500">
                   ${car.price.toLocaleString()}
-                  <span className="text-sm font-normal text-primary-300 ml-1">/day</span>
+                  <span className="text-xs sm:text-sm font-normal text-primary-300 ml-1">/day</span>
                 </div>
                 
                 {/* View Details Button */}
-                <span className="opacity-0 group-hover:opacity-100 transition-opacity duration-200 inline-flex items-center px-3 py-1.5 text-xs font-medium text-primary-600 hover:text-primary-700 border border-primary-200 rounded-lg hover:bg-primary-50">
+                <span className="opacity-0 group-hover:opacity-100 transition-opacity duration-200 inline-flex items-center px-2 sm:px-3 py-1 sm:py-1.5 text-[10px] sm:text-xs font-medium text-primary-600 hover:text-primary-700 border border-primary-200 rounded-lg hover:bg-primary-50">
                   View
-                  <svg className="w-3 h-3 ml-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <svg className="w-2.5 h-2.5 sm:w-3 sm:h-3 ml-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
                   </svg>
                 </span>

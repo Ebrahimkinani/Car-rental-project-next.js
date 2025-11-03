@@ -69,7 +69,7 @@ export default function Page({ initialCars = [] }: GridPageProps) {
   if (loading) {
     return (
       <main id="car-grid" className="min-h-screen bg-white">
-        <div className="py-16">
+        <div className="pt-[7vh] pb-16">
           <div className="container mx-auto px-4 sm:px-6 lg:px-8">
             <div className="text-center">
               <div className="text-gray-500 text-lg">Loading cars... (Cars: {cars.length})</div>
@@ -82,14 +82,14 @@ export default function Page({ initialCars = [] }: GridPageProps) {
 
   return (
     <main id="car-grid" className="min-h-screen bg-white ">
-      <div className="py-16">
+      <div className="pt-[7vh] pb-8">
         <div className="container mx-auto px-4 sm:px-6 lg:px-8">
           <Categories />
           <Search onSearch={handleSearch} />
           
           {/* Search Results Info */}
           {(searchFilters.carName !== "" || searchFilters.carModel !== "") && (
-            <div className="mb-6 text-center">
+            <div className="mb-6 text-center ">
               <p className="text-gray-600">
                 Found {filteredCars.length} car{filteredCars.length !== 1 ? 's' : ''} 
                 {searchFilters.carName && ` matching "${searchFilters.carName}"`}
@@ -101,7 +101,7 @@ export default function Page({ initialCars = [] }: GridPageProps) {
           {filteredCars.length > 0 ? (
             <CarGrid cars={filteredCars} />
           ) : (
-            <div className="text-center py-12">
+            <div className="text-center py-12 pt-[7vh]">
               <div className="text-gray-500 text-lg mb-4">
                 {cars.length === 0 ? 'No cars available in database' : 'No cars found matching your search criteria'}
               </div>

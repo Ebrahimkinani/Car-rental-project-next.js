@@ -42,7 +42,7 @@ export default function Categories() {
 
   if (loading) {
     return (
-      <section className="pt-4 pb-8">
+      <section className="pb-8 mt-0 pt-0">
         <div className="text-center">
           <div className="text-gray-500">Loading categories...</div>
         </div>
@@ -51,7 +51,7 @@ export default function Categories() {
   }
 
   return (
-    <section className="pt-4 pb-8">
+    <section className="pb-8 mt-0 pt-0">
       <div className="text-center mb-6">
         <h2 className="text-[28px] font-semibold mb-4">
           <Link href="/cars/category" className="hover:underline">

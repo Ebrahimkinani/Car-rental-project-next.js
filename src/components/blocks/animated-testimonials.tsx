@@ -109,9 +109,9 @@ export function AnimatedTestimonials({
                 </div>
               )}
 
-              <h2 className="text-[28px] font-bold tracking-tighter">{title}</h2>
+              <h2 className="text-xl font-bold tracking-tighter md:text-[28px]">{title}</h2>
 
-              <p className="max-w-[600px] text-sm text-muted-foreground md:text-base/relaxed">{subtitle}</p>
+              <p className="max-w-[600px] text-xs text-muted-foreground md:text-base/relaxed">{subtitle}</p>
 
               <div className="flex items-center gap-3 pt-2">
                 {testimonials.map((_, index) => (
@@ -154,7 +154,7 @@ export function AnimatedTestimonials({
 
                   <div className="relative mb-4 flex-1">
                     <Quote className="absolute -top-2 -left-2 h-6 w-6 text-primary/20 rotate-180" />
-                    <p className="relative z-10 text-base font-medium leading-relaxed">&quot;{testimonial.content}&quot;</p>
+                    <p className="relative z-10 text-sm font-medium leading-relaxed md:text-base">&quot;{testimonial.content}&quot;</p>
                   </div>
 
                   <Separator className="my-3" />
@@ -184,10 +184,10 @@ export function AnimatedTestimonials({
         {/* Logo cloud */}
         {trustedCompanies.length > 0 && (
           <motion.div variants={itemVariants} initial="hidden" animate={controls} className="mt-12 text-center">
-            <h3 className="text-sm font-medium text-muted-foreground mb-4">{trustedCompaniesTitle}</h3>
+            <h3 className="text-xs font-medium text-muted-foreground mb-4 md:text-sm">{trustedCompaniesTitle}</h3>
             <div className="flex flex-wrap justify-center gap-x-8 gap-y-4">
               {trustedCompanies.map((company) => (
-                <div key={company} className="text-lg font-semibold text-muted-foreground/50">
+                <div key={company} className="text-sm font-semibold text-muted-foreground/50 md:text-lg">
                   {company}
                 </div>
               ))}

@@ -67,7 +67,7 @@ export function Navbar() {
                             <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-linear-to-br from-primary-500 to-secondary-600">
                                 <span className="text-xl font-bold text-white">C</span>
                             </div>
-                            <span className="text-xl font-bold text-black! transition-colors duration-300">
+                            <span className="text-lg md:text-base lg:text-xl font-bold text-black! transition-colors duration-300">
                                 Cars Project
                             </span>
                         </Link>
@@ -80,11 +80,11 @@ export function Navbar() {
                             <Fragment key={link.href}>
                                 <Link
                                     href={link.href}
-                                    className="text-sm font-medium text-black! hover:text-primary-500! transition-colors duration-300">
+                                    className="text-xs md:text-xs lg:text-sm font-medium text-black! hover:text-primary-500! transition-colors duration-300">
                                     {link.label}
                                 </Link>
                                 {index === 0 && (
-                                    <Link href="/cars/category" className="text-sm font-medium text-black! hover:text-primary-500! transition-colors duration-300">
+                                    <Link href="/cars/category" className="text-xs md:text-xs lg:text-sm font-medium text-black! hover:text-primary-500! transition-colors duration-300">
                                         Categories
                                     </Link>
                                 )}
@@ -98,7 +98,7 @@ export function Navbar() {
                         user ? (
                             <> {/* Username and Bell Icon */}
                                 <div className="hidden md:flex md:items-center md:space-x-2">
-                                    <span className="text-sm text-black! font-medium">
+                                    <span className="text-xs md:text-xs lg:text-sm text-black! font-medium">
                                         {
                                         user.firstName || user.username
                                     } </span>
@@ -125,7 +125,7 @@ export function Navbar() {
                             </>
                         ) : (
                             <>
-                                <Link href="/auth/login" className="hidden md:block rounded-lg border border-gray-300 text-black! hover:text-black! hover:border-gray-400 hover:bg-gray-50 px-4 py-2 text-sm font-medium transition-all duration-300">
+                                <Link href="/auth/login" className="hidden md:block rounded-lg border border-gray-300 text-black! hover:text-black! hover:border-gray-400 hover:bg-gray-50 px-3 md:px-3 lg:px-4 py-2 text-xs md:text-xs lg:text-sm font-medium transition-all duration-300">
                                     Sign In
                                 </Link>
                             </>
