@@ -44,6 +44,9 @@ const nextConfig = {
     
     return config;
   },
+  // Add empty turbopack config to silence the error
+  // Turbopack is enabled by default in Next.js 16
+  turbopack: {},
 };
 
 export default nextConfig;

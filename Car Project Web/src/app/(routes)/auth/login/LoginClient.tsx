@@ -122,7 +122,7 @@ export default function LoginClient() {
               </Link>
             </div>
 
-            <Button type="submit" className="w-full" loading={loading}>
+            <Button type="submit" className="w-full border border-gray-300 dark:border-gray-700" loading={loading}>
               Sign In
             </Button>
 
