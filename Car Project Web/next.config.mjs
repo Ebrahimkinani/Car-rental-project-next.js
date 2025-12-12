@@ -17,35 +17,6 @@ const nextConfig = {
       },
     ],
   },
-  webpack: (config, { dev, isServer }) => {
-    // Fix webpack module resolution issues
-    config.resolve.fallback = {
-      ...config.resolve.fallback,
-      fs: false,
-      net: false,
-      tls: false,
-      crypto: false,
-      stream: false,
-      util: false,
-      url: false,
-      assert: false,
-      http: false,
-      https: false,
-      os: false,
-      path: false,
-    };
-    
-    // Optimize webpack cache
-    if (dev) {
-      config.cache = {
-        type: 'filesystem',
-      };
-    }
-    
-    return config;
-  },
-  // Add empty turbopack config to silence the error
-  // Turbopack is enabled by default in Next.js 16
   turbopack: {},
 };
 

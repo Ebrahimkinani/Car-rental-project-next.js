@@ -1,5 +1,5 @@
 import mongoose from 'mongoose';
-import { Notification } from '@/models/Notification';
+import { Notification, NotificationDocument } from '@/models/Notification';
 import { pushToUserSocket } from './realtime';
 import { CreateNotificationInput } from './types/notifications';
 import { dbConnect } from './mongodb';
@@ -23,7 +23,7 @@ export async function createNotification(input: CreateNotificationInput) {
     sentSMS: false,
   };
 
-  const created = await Notification.create(doc);
+  const created = (await Notification.create(doc)) as unknown as NotificationDocument;
   const plain = created.toObject();
 
   // Broadcast to SSE clients

@@ -2,7 +2,7 @@ import { NextRequest, NextResponse } from 'next/server';
 import mongoose from 'mongoose';
 import { verifySession } from '@/lib/auth/verifySession';
 import { dbConnect } from '@/lib/mongodb';
-import { Notification } from '@/models/Notification';
+import { Notification, NotificationDocument } from '@/models/Notification';
 import { pushToUserSocket } from '@/lib/realtime';
 
 // GET /api/notifications - current user's notifications
@@ -75,7 +75,7 @@ export async function POST(request: NextRequest) {
     sentSMS: false,
   };
 
-  const created = await Notification.create(doc);
+  const created = (await Notification.create(doc)) as unknown as NotificationDocument;
 
   await pushToUserSocket({
     userId: userId || null,
