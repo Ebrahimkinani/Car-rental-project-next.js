@@ -23,9 +23,8 @@ const nextConfig = {
       },
     ],
   },
-
-  // Explicitly enable Turbopack
-  turbopack: {},
+  // ❌ Do NOT include `turbopack` here
+  // ❌ Do NOT define a `webpack` function here unless absolutely needed
 };
 
 export default nextConfig;
