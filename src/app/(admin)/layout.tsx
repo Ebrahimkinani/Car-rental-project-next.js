@@ -6,66 +6,11 @@ import { useAuth } from "@/contexts/AuthContext";
 import Sidebar from "./_components/layout/Sidebar";
 import Topbar from "./_components/layout/Topbar";
 import { NotificationProvider } from "@/contexts/NotificationProvider";
+import { IS_PREVIEW_MODE } from "@/lib/preview-mode";
 
-export default function AdminGroupLayout({ children }: { children: React.ReactNode }) {
-  const { user, loading } = useAuth();
-  const router = useRouter();
-  
-  // Define allowed roles for admin access
-  const staffRoles = ['admin', 'manager', 'employee'];
+const staffRoles = ["admin", "manager", "employee"];
 
-  useEffect(() => {
-    // Wait for loading to complete
-    if (loading) return;
-    
-    // Check if user exists
-    if (!user) {
-      router.push('/auth/login');
-      return;
-    }
-    
-    // Normalize role and status for consistent comparisons
-    const normalizedRole = user.role?.toLowerCase() || '';
-    const normalizedStatus = user.status?.toLowerCase() || '';
-    
-    // Check if user account is active (case-insensitive)
-    if (normalizedStatus !== 'active') {
-      router.push('/auth/login?error=suspended');
-      return;
-    }
-    
-    // Check if user has staff role (case-insensitive)
-    if (!staffRoles.includes(normalizedRole)) {
-      router.push('/no-access');
-      return;
-    }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [user, loading, router]);
-
-  // Show loading state while checking auth
-  if (loading) {
-    return (
-      <div className="flex min-h-screen items-center justify-center bg-zinc-50">
-        <div className="text-center">
-          <div className="h-8 w-8 animate-spin rounded-full border-4 border-primary-600 border-t-transparent"></div>
-          <p className="mt-2 text-sm text-gray-600">Loading...</p>
-        </div>
-      </div>
-    );
-  }
-
-  // Deny access if not staff or not active (with normalized checks)
-  if (!user) {
-    return null;
-  }
-  
-  const normalizedRole = user.role?.toLowerCase() || '';
-  const normalizedStatus = user.status?.toLowerCase() || '';
-  
-  if (!staffRoles.includes(normalizedRole) || normalizedStatus !== 'active') {
-    return null;
-  }
-
+function AdminShell({ children }: { children: React.ReactNode }) {
   return (
     <NotificationProvider>
       <div className="flex min-h-screen bg-zinc-50">
@@ -77,4 +22,56 @@ export default function AdminGroupLayout({ children }: { children: React.ReactNo
       </div>
     </NotificationProvider>
   );
+}
+
+export default function AdminGroupLayout({ children }: { children: React.ReactNode }) {
+  const { user, loading } = useAuth();
+  const router = useRouter();
+
+  useEffect(() => {
+    if (IS_PREVIEW_MODE || loading) return;
+
+    if (!user) {
+      router.push("/auth/login");
+      return;
+    }
+
+    const normalizedRole = user.role?.toLowerCase() || "";
+    const normalizedStatus = user.status?.toLowerCase() || "";
+
+    if (normalizedStatus !== "active") {
+      router.push("/auth/login?error=suspended");
+      return;
+    }
+
+    if (!staffRoles.includes(normalizedRole)) {
+      router.push("/no-access");
+    }
+  }, [user, loading, router]);
+
+  if (IS_PREVIEW_MODE) {
+    return <AdminShell>{children}</AdminShell>;
+  }
+
+  if (loading) {
+    return (
+      <div className="flex min-h-screen items-center justify-center bg-zinc-50">
+        <div className="text-center">
+          <div className="mx-auto h-8 w-8 animate-spin rounded-full border-4 border-primary-600 border-t-transparent" />
+          <p className="mt-2 text-sm text-gray-600">Loading...</p>
+        </div>
+      </div>
+    );
+  }
+
+  if (!user) return null;
+
+  const normalizedRole = user.role?.toLowerCase() || "";
+  const normalizedStatus = user.status?.toLowerCase() || "";
+
+  if (!staffRoles.includes(normalizedRole) || normalizedStatus !== "active") {
+    return null;
+  }
+
+  return <AdminShell>{children}</AdminShell>;
 }

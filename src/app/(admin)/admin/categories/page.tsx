@@ -1,6 +1,6 @@
 "use client";
 
-import { useMemo, useState, useEffect } from "react";
+import { useMemo, useState } from "react";
 import type { Category } from "@/types";
 import CategoryFilters from "../../_components/filters/CategoryFilters";
 import CategoriesTable from "../../_components/tables/CategoriesTables";
@@ -8,52 +8,35 @@ import CategoryDrawer from "../../_components/forms/CategoryDrawer";
 import { StatsGrid } from "@/components/ui/stats-card";
 import { AlertDialog } from "@/components/ui/alert-dialog";
 import { Tags, Eye, EyeOff } from "lucide-react";
-import useSWR from 'swr';
 import ExpensesTrend from "../../_components/charts/ExpensesTrends";
+import { getStoreCategories } from "@/lib/mock-store";
 import { categoriesApi } from "@/services/api/categories";
 
+function buildCategoryTrend(days: number) {
+  const now = new Date();
+  const start = new Date(now);
+  start.setDate(now.getDate() - Math.max(1, days) + 1);
+  const points: { date: string; total: number }[] = [];
+  const cursor = new Date(start);
+  while (cursor <= now) {
+    points.push({ date: cursor.toISOString().split("T")[0]!, total: 0 });
+    cursor.setDate(cursor.getDate() + 1);
+  }
+  return { points };
+}
+
 export default function CategoriesPage() {
-  // fetcher for SWR
-  const fetcher = (url: string) => fetch(url, { credentials: 'include' }).then(res => res.json());
-  const [rows, setRows] = useState<Category[]>([]);
+  const [rows, setRows] = useState<Category[]>(() => getStoreCategories());
   const [query, setQuery] = useState("");
   const [status, setStatus] = useState("All");
   const [drawerOpen, setDrawerOpen] = useState(false);
   const [editing, setEditing] = useState<Category | null>(null);
   const [alertOpen, setAlertOpen] = useState(false);
   const [alertMessage, setAlertMessage] = useState("");
-  const { data: trendData } = useSWR<{ points: { date: string; total: number }[] }>(
-    '/api/admin/categories/trend?days=30',
-    fetcher,
-    { refreshInterval: 60000, revalidateOnFocus: true }
-  );
+  const trendData = useMemo(() => buildCategoryTrend(30), []);
 
-  // Load categories on mount
-  useEffect(() => {
-    loadCategories();
-  }, []);
-
-  const loadCategories = async () => {
-    try {
-      // Use main API (with fallback data if MongoDB fails)
-      const response = await fetch('/api/categories');
-      const result = await response.json();
-      
-      if (result.success) {
-        setRows(result.data);
-        if (result.message) {
-          // Category message received
-        }
-      } else {
-        console.error("Error loading categories:", result.error);
-        // Fallback to empty array
-        setRows([]);
-      }
-    } catch (error) {
-      console.error("Error loading categories:", error);
-      // Fallback to empty array
-      setRows([]);
-    }
+  const loadCategories = () => {
+    setRows(getStoreCategories());
   };
 
   const data = useMemo(() => {

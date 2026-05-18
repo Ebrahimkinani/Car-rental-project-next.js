@@ -51,7 +51,10 @@ export default function ProfilePage() {
       const favoritesResponse = await fetch('/api/favorites');
       if (favoritesResponse.ok) {
         const favoritesData = await favoritesResponse.json();
-        setFavoritesCount(favoritesData.data?.length || 0);
+        const favoritesList = Array.isArray(favoritesData)
+          ? favoritesData
+          : favoritesData.data ?? [];
+        setFavoritesCount(favoritesList.length);
       }
 
       // Load bookings data from API
@@ -72,8 +75,8 @@ export default function ProfilePage() {
           setTotalSpent(total);
           
           // Count active bookings (status: confirmed or pending)
-          const active = bookingsData.filter((booking: any) => 
-            booking.status === 'confirmed' || booking.status === 'pending'
+          const active = bookingsData.filter((booking: { status?: string }) =>
+            booking.status === "upcoming" || booking.status === "active"
           ).length;
           setActiveBookings(active);
         } else {

@@ -1,41 +1,87 @@
-// TODO: This file is deprecated and will be removed
-// All category functionality has been moved to the service layer
-// Use categoriesApi from @/services/api/categories instead
-
 import { Category } from "@/types";
+import { USE_MOCK_DATA } from "@/lib/data-source";
+import {
+  getStoreCategories,
+  getStoreCategoryById,
+  getStoreCategoryBySlug,
+  addStoreCategory,
+  updateStoreCategory,
+  deleteStoreCategory,
+} from "@/lib/mock-store";
 
-// Legacy exports for backward compatibility during transition
-// These will be removed once all components are updated to use the service layer
+// Temporary mock data mode for UI/UX client preview. Replace with database queries later.
 
-export const carBrands: Category[] = [];
-export const vehicleTypes: Category[] = [];
+export async function getCategories(): Promise<Category[]> {
+  if (USE_MOCK_DATA) {
+    return getStoreCategories();
+  }
 
-export function getBrandById(_id: string): Category | undefined {
-  console.warn("getBrandById is deprecated. Use categoriesApi.getById() instead.");
-  return undefined;
-}
-
-export function getVehicleTypeById(_id: string): Category | undefined {
-  console.warn("getVehicleTypeById is deprecated. Use categoriesApi.getById() instead.");
-  return undefined;
-}
-
-export function getAllCategories(): Category[] {
-  console.warn("getAllCategories is deprecated. Use categoriesApi.getAll() instead.");
+  /* DATABASE_MODE — use categories API / MongoDB when reconnecting
+  return [];
+  */
   return [];
 }
 
-export function getCategoryById(_id: string): Category | undefined {
-  console.warn("getCategoryById is deprecated. Use categoriesApi.getById() instead.");
-  return undefined;
+export async function getActiveCategories(): Promise<Category[]> {
+  const categories = await getCategories();
+  return categories.filter((c) => c.status === "Active");
 }
 
-export function getBrandBySlug(_slug: string): Category | undefined {
-  console.warn("getBrandBySlug is deprecated. Use categoriesApi.getBySlug() instead.");
-  return undefined;
+export async function getCategoryById(id: string): Promise<Category | null> {
+  if (USE_MOCK_DATA) {
+    return getStoreCategoryById(id);
+  }
+  return null;
 }
 
-export function getVehicleTypeBySlug(_slug: string): Category | undefined {
-  console.warn("getVehicleTypeBySlug is deprecated. Use categoriesApi.getBySlug() instead.");
-  return undefined;
+export async function getCategoryBySlug(slug: string): Promise<Category | null> {
+  if (USE_MOCK_DATA) {
+    return getStoreCategoryBySlug(slug);
+  }
+  return null;
+}
+
+export async function createCategoryInStore(
+  data: Omit<Category, "id" | "createdAt" | "updatedAt">
+): Promise<Category> {
+  return addStoreCategory(data);
+}
+
+export async function updateCategoryInStore(
+  id: string,
+  updates: Partial<Omit<Category, "id" | "createdAt">>
+): Promise<Category> {
+  return updateStoreCategory(id, updates);
+}
+
+export async function deleteCategoryFromStore(id: string): Promise<boolean> {
+  return deleteStoreCategory(id);
+}
+
+// Legacy exports kept for any remaining imports
+export const carBrands: Category[] = [];
+export const vehicleTypes: Category[] = [];
+
+export function getBrandById(id: string): Category | undefined {
+  return getStoreCategoryById(id) ?? undefined;
+}
+
+export function getVehicleTypeById(id: string): Category | undefined {
+  return getStoreCategoryById(id) ?? undefined;
+}
+
+export function getAllCategories(): Category[] {
+  return getStoreCategories();
+}
+
+export function getCategoryByIdSync(id: string): Category | undefined {
+  return getStoreCategoryById(id) ?? undefined;
+}
+
+export function getBrandBySlug(slug: string): Category | undefined {
+  return getStoreCategoryBySlug(slug) ?? undefined;
+}
+
+export function getVehicleTypeBySlug(slug: string): Category | undefined {
+  return getStoreCategoryBySlug(slug) ?? undefined;
 }

@@ -8,6 +8,11 @@ import { StatsGrid } from "@/components/ui/stats-card";
 import ExpensesTrend from "../../_components/charts/ExpensesTrends";
 import { Users, UserCheck, UserPlus, UserX } from "lucide-react";
 import ClientsTable from "../../_components/tables/ClientsTables";
+import {
+  filterStoreClients,
+  getStoreClientKpis,
+  getStoreClientTrend,
+} from "@/lib/mock-store";
 
 // Types for API responses
 interface ClientsResponse {
@@ -61,31 +66,38 @@ export default function ClientsPage() {
     return `/api/admin/clients?${params}`;
   };
 
-  // Fetch clients data
+  const mockClientsFallback = filterStoreClients({
+    page,
+    limit: 10,
+    sortBy,
+    sortOrder,
+    search: query,
+    status,
+    tier,
+    branch,
+    from: dateFrom,
+    to: dateTo,
+  });
+
   const { data: clientsData, error: clientsError, isLoading: clientsLoading } = useSWR<ClientsResponse>(
     buildApiUrl(),
     fetcher,
     {
-      refreshInterval: 30000, // Refresh every 30 seconds
-      revalidateOnFocus: true,
+      fallbackData: mockClientsFallback,
+      revalidateOnFocus: false,
     }
   );
 
-  // Fetch KPIs data
   const { data: kpisData, error: kpisError } = useSWR<KPIsResponse>(
-    '/api/admin/clients/kpis',
+    "/api/admin/clients/kpis",
     fetcher,
-    {
-      refreshInterval: 60000, // Refresh every minute
-      revalidateOnFocus: true,
-    }
+    { fallbackData: getStoreClientKpis(), revalidateOnFocus: false }
   );
 
-  // Fetch trend data (daily new clients)
   const { data: trendData } = useSWR<{ points: TrendResponsePoint[] }>(
-    '/api/admin/clients/trend?days=30',
+    "/api/admin/clients/trend?days=30",
     fetcher,
-    { refreshInterval: 60000, revalidateOnFocus: true }
+    { fallbackData: { points: getStoreClientTrend(30) }, revalidateOnFocus: false }
   );
 
   // Handle pagination
@@ -126,7 +138,7 @@ export default function ClientsPage() {
   }
 
   // Handle loading state
-  if (clientsLoading) {
+  if (clientsLoading && !clientsData) {
     return (
       <div className="space-y-6">
         <div className="text-center py-8">

@@ -5,13 +5,17 @@ import { Favorite } from '@/models/Favorite';
 import { Car } from '@/models/Car';
 import { transformCarsForAPI } from '@/lib/transformers';
 import mongoose from 'mongoose';
+import { USE_MOCK_DATA } from '@/lib/data-source';
+import {
+  addMockFavorite,
+  getMockFavoriteCars,
+  isMockFavorite,
+} from '@/lib/mock-auth-store';
+import { getStoreCarById } from '@/lib/mock-store';
 
 // GET /api/favorites - Get user's favorite cars
 export async function GET(request: NextRequest) {
   try {
-    await dbConnect();
-
-    // Get user from authenticated request
     const session = await getSessionFromRequest(request);
     if (!session) {
       return NextResponse.json(
@@ -19,8 +23,13 @@ export async function GET(request: NextRequest) {
         { status: 401 }
       );
     }
+
+    if (USE_MOCK_DATA) {
+      return NextResponse.json(getMockFavoriteCars(session.userId));
+    }
+
+    await dbConnect();
     
-    // Get user's favorite car IDs
     const favorites = await Favorite.find({ userId: session.userId }).lean();
     const carIds = favorites.map(fav => fav.carId);
     
@@ -45,7 +54,6 @@ export async function GET(request: NextRequest) {
 // POST /api/favorites - Add car to favorites
 export async function POST(request: NextRequest) {
   try {
-    await dbConnect();
     const { carId } = await request.json();
     
     if (!carId) {
@@ -55,7 +63,6 @@ export async function POST(request: NextRequest) {
       );
     }
     
-    // Get user from authenticated request
     const session = await getSessionFromRequest(request);
     
     if (!session) {
@@ -64,8 +71,23 @@ export async function POST(request: NextRequest) {
         { status: 401 }
       );
     }
+
+    if (USE_MOCK_DATA) {
+      if (!getStoreCarById(carId)) {
+        return NextResponse.json({ error: 'Car not found' }, { status: 404 });
+      }
+      if (isMockFavorite(session.userId, carId)) {
+        return NextResponse.json(
+          { error: 'Car already in favorites' },
+          { status: 409 }
+        );
+      }
+      addMockFavorite(session.userId, carId);
+      return NextResponse.json({ message: 'Car added to favorites' });
+    }
+
+    await dbConnect();
     
-    // Check if car exists - convert string ID to ObjectId
     let carObjectId;
     try {
       carObjectId = new mongoose.Types.ObjectId(carId);

@@ -3,6 +3,11 @@ import { dbConnect } from '@/lib/mongodb';
 import { getSessionFromRequest } from '@/lib/auth';
 import { Booking } from '../../../../../lib/models/Booking';
 import mongoose from 'mongoose';
+import { USE_MOCK_DATA } from '@/lib/data-source';
+import {
+  getMockBookingById,
+  updateMockBookingStatus,
+} from '@/lib/mock-auth-store';
 
 // GET /api/bookings/[id] - Get a specific booking
 export async function GET(
@@ -187,9 +192,6 @@ export async function DELETE(
   { params }: { params: Promise<{ id: string }> }
 ) {
   try {
-    await dbConnect();
-    
-    // Get user from authenticated request
     const session = await getSessionFromRequest(request);
     if (!session) {
       return NextResponse.json(
@@ -199,8 +201,24 @@ export async function DELETE(
     }
     
     const { id } = await params;
+
+    if (USE_MOCK_DATA) {
+      const booking = getMockBookingById(session.userId, id);
+      if (!booking) {
+        return NextResponse.json({ error: 'Booking not found' }, { status: 404 });
+      }
+      if (booking.status === 'completed' || booking.status === 'cancelled') {
+        return NextResponse.json(
+          { error: 'Booking cannot be cancelled' },
+          { status: 400 }
+        );
+      }
+      updateMockBookingStatus(session.userId, id, 'cancelled');
+      return NextResponse.json({ message: 'Booking cancelled successfully' });
+    }
+
+    await dbConnect();
     
-    // Validate booking ID
     let bookingObjectId;
     try {
       bookingObjectId = new mongoose.Types.ObjectId(id);
@@ -211,7 +229,6 @@ export async function DELETE(
       );
     }
     
-    // Check if booking exists and can be cancelled
     const booking = await Booking.findOne({
       _id: bookingObjectId,
       userId: session.userId

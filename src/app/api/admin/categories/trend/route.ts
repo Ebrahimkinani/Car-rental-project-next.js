@@ -2,14 +2,33 @@ import { NextRequest, NextResponse } from 'next/server';
 import { dbConnect } from '@/lib/mongodb';
 import mongoose from 'mongoose';
 import { Category as CategoryModel } from '@/models/Category';
+import { USE_MOCK_DATA } from '@/lib/data-source';
 
-// GET /api/admin/categories/trend - Daily new categories counts for the last N days
+function buildMockCategoryTrend(days: number): { date: string; total: number }[] {
+  const now = new Date();
+  const start = new Date(now);
+  start.setDate(now.getDate() - Math.max(1, days) + 1);
+  const points: { date: string; total: number }[] = [];
+  const cursor = new Date(start);
+  while (cursor <= now) {
+    const key = cursor.toISOString().split('T')[0]!;
+    points.push({ date: key, total: key.endsWith('15') ? 1 : 0 });
+    cursor.setDate(cursor.getDate() + 1);
+  }
+  return points;
+}
+
 export async function GET(request: NextRequest) {
   try {
-    await dbConnect();
 
     const { searchParams } = new URL(request.url);
     const daysParam = parseInt(searchParams.get('days') || '30', 10);
+
+    if (USE_MOCK_DATA) {
+      return NextResponse.json({ points: buildMockCategoryTrend(daysParam) });
+    }
+
+    await dbConnect();
 
     const now = new Date();
     const startDate = new Date(now);

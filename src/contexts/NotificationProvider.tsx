@@ -1,6 +1,7 @@
 "use client";
 
 import React, { createContext, useCallback, useContext, useEffect, useMemo, useState } from 'react';
+import { IS_PREVIEW_MODE } from '@/lib/preview-mode';
 
 type NotificationItem = {
   _id: string;
@@ -29,6 +30,10 @@ export function NotificationProvider({ children }: { children: React.ReactNode }
   const [items, setItems] = useState<NotificationItem[]>([]);
 
   const fetchNotifications = useCallback(async () => {
+    if (IS_PREVIEW_MODE) {
+      setItems([]);
+      return;
+    }
     try {
       const res = await fetch('/api/notifications', { credentials: 'include' });
       if (!res.ok) return;
@@ -43,8 +48,9 @@ export function NotificationProvider({ children }: { children: React.ReactNode }
     fetchNotifications();
   }, [fetchNotifications]);
 
-  // Realtime via SSE (fallback when WebSocket is not configured)
   useEffect(() => {
+    if (IS_PREVIEW_MODE) return;
+
     const controller = new AbortController();
     const connect = async () => {
       try {

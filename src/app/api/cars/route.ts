@@ -4,9 +4,28 @@ import { ObjectId } from 'mongodb';
 import { transformCarForAPI, transformCarsForAPI } from '@/lib/transformers';
 import { Car } from '@/models/Car';
 import { Category } from '@/models/Category';
+import { USE_MOCK_DATA } from '@/lib/data-source';
+import { getStoreCars } from '@/lib/mock-store';
 
 export async function GET(request: NextRequest) {
   try {
+    if (USE_MOCK_DATA) {
+      let cars = getStoreCars();
+      const { searchParams } = new URL(request.url);
+      if (searchParams.get('available') === 'true') {
+        cars = cars.filter((c) => c.available);
+      }
+      const categoryId = searchParams.get('categoryId');
+      if (categoryId) {
+        cars = cars.filter((c) => c.categoryId === categoryId);
+      }
+      const brandId = searchParams.get('brandId');
+      if (brandId) {
+        cars = cars.filter((c) => c.brandId === brandId);
+      }
+      return NextResponse.json({ success: true, data: cars });
+    }
+
     await dbConnect();
     const { searchParams } = new URL(request.url);
     

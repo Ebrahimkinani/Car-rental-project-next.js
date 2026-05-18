@@ -3,6 +3,8 @@ import { dbConnect } from '@/lib/mongodb';
 import { getSessionFromRequest } from '@/lib/auth';
 import { Favorite } from '@/models/Favorite';
 import mongoose from 'mongoose';
+import { USE_MOCK_DATA } from '@/lib/data-source';
+import { removeMockFavorite } from '@/lib/mock-auth-store';
 
 // DELETE /api/favorites/[carId] - Remove car from favorites
 export async function DELETE(
@@ -10,10 +12,8 @@ export async function DELETE(
   { params }: { params: Promise<{ carId: string }> }
 ) {
   try {
-    await dbConnect();
     const { carId } = await params;
     
-    // Get user from authenticated request
     const session = await getSessionFromRequest(request);
     if (!session) {
       return NextResponse.json(
@@ -21,8 +21,17 @@ export async function DELETE(
         { status: 401 }
       );
     }
+
+    if (USE_MOCK_DATA) {
+      const removed = removeMockFavorite(session.userId, carId);
+      if (!removed) {
+        return NextResponse.json({ error: 'Favorite not found' }, { status: 404 });
+      }
+      return NextResponse.json({ message: 'Car removed from favorites' });
+    }
+
+    await dbConnect();
     
-    // Convert string ID to ObjectId
     let carObjectId;
     try {
       carObjectId = new mongoose.Types.ObjectId(carId);

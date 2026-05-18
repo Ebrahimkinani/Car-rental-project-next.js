@@ -4,7 +4,7 @@ import { useState, useMemo, useEffect, use } from "react";
 import { notFound } from "next/navigation";
 import CarGrid from "@/components/carGrid/CarGrid";
 import BrandSearch from "@/components/ui/BrandSearch";
-import { getCarsByBrandFromStorage } from "@services/cars/cars.service";
+import { getCarsByBrandFromStorage } from "@/services/cars/cars.service";
 import { categoriesApi } from "@/services/api/categories";
 import { Car, Category } from "@/types";
 
@@ -57,7 +57,9 @@ export default function BrandPage({ params }: BrandPageProps) {
         setLoading(true);
         const categoryData = await categoriesApi.getBySlug(slug);
         if (!categoryData) {
-          notFound();
+          if (mounted) {
+            setCategory(null);
+          }
           return;
         }
         
@@ -72,7 +74,7 @@ export default function BrandPage({ params }: BrandPageProps) {
       } catch (error) {
         console.error("Error loading category data:", error);
         if (mounted) {
-          notFound();
+          setCategory(null);
         }
       } finally {
         if (mounted) {
@@ -112,8 +114,12 @@ export default function BrandPage({ params }: BrandPageProps) {
     );
   }
 
-  if (!category) {
+  if (!loading && !category) {
     notFound();
+  }
+
+  if (!category) {
+    return null;
   }
 
   return (

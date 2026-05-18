@@ -1,17 +1,22 @@
 import { notFound } from "next/navigation";
 import { Metadata } from "next";
-// import { ArrowLeftIcon } from "@heroicons/react/24/outline";
-import { getCarByIdFromStorage } from "@/services/cars/cars.service";  
+import { getCarByIdFromStorage } from "@/services/cars/cars.service";
+import { getRelatedCars } from "@/lib/cars";
+import { USE_MOCK_DATA } from "@/lib/data-source";
+import { getStoreCars } from "@/lib/mock-store";
 import CarDetailsHero from "@/components/carDetails/cardetailsPage";
 import BookingForm from "@/components/carDetails/BookingForm";
-import { Car } from "@/types";
-
 import RelatedCars from "@/components/carDetails/RelatedCars";
 import RentalTerms from "@/components/carDetails/RentalTerms";
 
 
 interface CarDetailsPageProps {
   params: Promise<{ id: string }>;
+}
+
+export async function generateStaticParams() {
+  if (!USE_MOCK_DATA) return [];
+  return getStoreCars().map((car) => ({ id: car.id }));
 }
 
 export async function generateMetadata({ params }: CarDetailsPageProps): Promise<Metadata> {
@@ -44,10 +49,7 @@ export default async function CarDetailsPage({ params }: CarDetailsPageProps) {
     notFound();
   }
 
-  // Get related cars by fetching all cars and filtering
-  // For now, we'll pass an empty array to avoid SSR issues
-  // Related cars can be loaded client-side if needed
-  const relatedCars: Car[] = [];
+  const relatedCars = await getRelatedCars(id, 4);
 
   return (
     <div className="min-h-screen bg-white">

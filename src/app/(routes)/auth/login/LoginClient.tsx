@@ -9,6 +9,9 @@ import { Card } from "@/components/ui/Card";
 import { validateLoginForm } from "@/lib/validations";
 import { useAuth } from "@/contexts/AuthContext";
 import type { LoginFormData } from "@/types";
+import { MOCK_DEMO_PASSWORD } from "@/data/mock-users";
+
+const SHOW_DEMO_HINT = process.env.NEXT_PUBLIC_USE_MOCK_DATA !== "false";
 
 export default function LoginClient() {
   const searchParams = useSearchParams();
@@ -68,6 +71,16 @@ export default function LoginClient() {
 
         <Card>
           <form onSubmit={handleSubmit} className="space-y-6">
+            {SHOW_DEMO_HINT && (
+              <div className="rounded-md border border-primary-200 bg-primary-50 p-4 text-sm text-primary-900 dark:border-primary-800 dark:bg-primary-950/40 dark:text-primary-100">
+                <p className="font-medium">Demo accounts (mock mode)</p>
+                <ul className="mt-2 space-y-1 text-primary-800 dark:text-primary-200">
+                  <li>Admin: admin@demo.com / {MOCK_DEMO_PASSWORD}</li>
+                  <li>Customer: customer@demo.com / {MOCK_DEMO_PASSWORD}</li>
+                </ul>
+              </div>
+            )}
+
             {message && (
               <div className="rounded-md bg-green-50 p-4 dark:bg-green-900/20">
                 <p className="text-sm text-green-800 dark:text-green-200">{message}</p>

@@ -12,6 +12,7 @@ export const API_URL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:3000
  */
 export const NAV_LINKS = [
   { href: "/", label: "Home" },
+  { href: "/cars", label: "Cars" },
   { href: "/bookings", label: "My Bookings" },
   { href: "/favorites", label: "Favorites" },
   { href: "/about", label: "About Us" },

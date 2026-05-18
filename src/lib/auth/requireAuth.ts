@@ -10,6 +10,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { verifySession } from '@/lib/auth/verifySession';
 import { getSessionByToken } from '@/lib/db/sessions';
+import { USE_MOCK_DATA } from '@/lib/data-source';
 
 export interface AuthenticatedUser {
   id: string;
@@ -73,9 +74,12 @@ export async function requireAuth(
     );
   }
 
-  // Get session for return value (for compatibility)
+  // Skip MongoDB session lookup in mock mode (avoids connection timeout hang)
   const sessionToken = request.cookies.get('session')?.value;
-  const session = sessionToken ? await getSessionByToken(sessionToken) : null;
+  const session =
+    USE_MOCK_DATA || !sessionToken
+      ? null
+      : await getSessionByToken(sessionToken);
 
   return {
     user,

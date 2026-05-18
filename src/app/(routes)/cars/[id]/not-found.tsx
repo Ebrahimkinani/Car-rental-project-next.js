@@ -21,7 +21,7 @@ export default function NotFound() {
             Back to Cars
           </Link>
           <Link
-            href=" /home "
+            href="/"
             className="inline-flex items-center gap-2 px-6 py-3 border border-gray-300 dark:border-gray-600 text-gray-700 dark:text-gray-300 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-800 transition-colors duration-200"
           >
             Go Home

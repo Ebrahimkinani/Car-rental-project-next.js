@@ -3,12 +3,20 @@ import { dbConnect } from '@/lib/mongodb';
 import { Booking } from '@/models/Booking';
 import { Car } from '@/models/Car';
 import { requireAuth } from '@/lib/auth/requireAuth';
+import { USE_MOCK_DATA } from '@/lib/data-source';
+import { getStoreDashboardStats } from '@/lib/mock-store';
 
 export async function GET(request: NextRequest) {
   try {
-    // Require admin, manager, or employee role
     await requireAuth(request, ['admin', 'manager', 'employee']);
-    
+
+    if (USE_MOCK_DATA) {
+      return NextResponse.json({
+        success: true,
+        data: getStoreDashboardStats(),
+      });
+    }
+
     await dbConnect();
 
     // Calculate date ranges

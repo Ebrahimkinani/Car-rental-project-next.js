@@ -2,14 +2,19 @@ import { NextRequest, NextResponse } from 'next/server';
 import { dbConnect } from '@/lib/mongodb';
 import mongoose from 'mongoose';
 import { UserDoc } from '@/lib/types/db';
+import { USE_MOCK_DATA } from '@/lib/data-source';
+import { getStoreClientTrend } from '@/lib/mock-store';
 
-// GET /api/admin/clients/trend - Daily new clients counts for the last 30 days (or provided range)
 export async function GET(request: NextRequest) {
   try {
-    await dbConnect();
-
     const { searchParams } = new URL(request.url);
     const daysParam = parseInt(searchParams.get('days') || '30', 10);
+
+    if (USE_MOCK_DATA) {
+      return NextResponse.json({ points: getStoreClientTrend(daysParam) });
+    }
+
+    await dbConnect();
 
     const now = new Date();
     const startDate = new Date(now);

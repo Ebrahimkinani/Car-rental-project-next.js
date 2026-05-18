@@ -5,7 +5,7 @@ import CarGrid from "./CarGrid";
 import Categories from "./Catogery";
 import Search from "../ui/search";
 import { Car } from "@/types";
-import { getAllCarsFromStorage } from "@/services/cars/cars.service";
+import { getCars } from "@/lib/cars";
 
 interface GridPageProps {
   initialCars?: Car[];
@@ -38,14 +38,14 @@ export default function Page({ initialCars = [] }: GridPageProps) {
   const [cars, setCars] = useState<Car[]>(initialCars);
   const [loading, setLoading] = useState(false);
 
-  // Load cars from MongoDB API - run only on client side if no initial cars
+  // Load cars from mock data when no server-provided initialCars
   useEffect(() => {
     if (initialCars.length === 0) {
       setLoading(true);
-      
+
       async function loadCars() {
         try {
-          const carsData = await getAllCarsFromStorage();
+          const carsData = await getCars();
           setCars(carsData);
         } catch (error) {
           console.error("[GridPage] Error loading cars:", error);
@@ -103,13 +103,12 @@ export default function Page({ initialCars = [] }: GridPageProps) {
           ) : (
             <div className="text-center py-12 pt-[7vh]">
               <div className="text-gray-500 text-lg mb-4">
-                {cars.length === 0 ? 'No cars available in database' : 'No cars found matching your search criteria'}
+                {cars.length === 0 ? "No cars available right now" : "No cars found matching your search criteria"}
               </div>
               <p className="text-gray-400">
-                {cars.length === 0 
-                  ? 'Please check if the database connection is working' 
-                  : 'Try adjusting your search filters to see more results'
-                }
+                {cars.length === 0
+                  ? "Check back soon — our fleet is being updated."
+                  : "Try adjusting your search filters to see more results"}
               </p>
               <div className="text-sm text-gray-400 mt-2">
                 Total cars loaded: {cars.length} | Filtered cars: {filteredCars.length}

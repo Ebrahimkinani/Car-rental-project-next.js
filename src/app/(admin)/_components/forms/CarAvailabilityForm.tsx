@@ -1,12 +1,7 @@
 "use client";
 
-import { useState } from "react";
-import useSWR from "swr";
-
-interface Category {
-  id: string;
-  name: string;
-}
+import { useState, useMemo } from "react";
+import { getStoreCategories } from "@/lib/mock-store";
 
 interface AvailabilityResponse {
   success: boolean;
@@ -21,12 +16,6 @@ interface AvailabilityResponse {
   };
 }
 
-const fetcher = (url: string) => 
-  fetch(url, { credentials: 'include' }).then((res) => {
-    if (!res.ok) throw new Error(`API error: ${res.status}`);
-    return res.json();
-  });
-
 export function CarAvailabilityForm() {
   const [carType, setCarType] = useState("");
   const [branch, setBranch] = useState("");
@@ -35,13 +24,13 @@ export function CarAvailabilityForm() {
   const [availabilityResult, setAvailabilityResult] = useState<number | null>(null);
   const [isChecking, setIsChecking] = useState(false);
 
-  // Fetch categories for car type dropdown
-  const { data: categoriesData } = useSWR<{ success: boolean; data: Category[] }>(
-    '/api/categories',
-    fetcher
+  const categories = useMemo(
+    () =>
+      getStoreCategories()
+        .filter((c) => c.status === "Active" && c.capacity)
+        .map((c) => ({ id: c.id, name: c.name })),
+    []
   );
-
-  const categories = categoriesData?.data || [];
 
   const handleCheckAvailability = async () => {
     if (!date || !time) {

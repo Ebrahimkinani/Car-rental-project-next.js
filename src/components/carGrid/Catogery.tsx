@@ -3,7 +3,7 @@
 import { useState, useEffect } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { categoriesApi } from "@/services/api/categories";
+import { getActiveCategories } from "@/lib/categories";
 import { Category } from "@/types";
 
 export default function Categories() {
@@ -20,8 +20,10 @@ export default function Categories() {
   const loadCategories = async () => {
     try {
       setLoading(true);
-      const activeCategories = await categoriesApi.getActive();
-      setCategories(activeCategories);
+      const activeCategories = await getActiveCategories();
+      // Vehicle types have capacity; brand entries have country
+      const vehicleTypes = activeCategories.filter((c) => Boolean(c.capacity));
+      setCategories(vehicleTypes.length > 0 ? vehicleTypes : activeCategories);
     } catch (error) {
       console.error("Error loading categories:", error);
     } finally {

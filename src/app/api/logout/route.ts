@@ -5,15 +5,19 @@
 
 import { NextRequest, NextResponse } from 'next/server';
 import { deleteSession } from '@/lib/db/sessions';
+import { USE_MOCK_DATA } from '@/lib/data-source';
+import { deactivateSession } from '@/lib/auth';
 
 export async function POST(request: NextRequest) {
   try {
-    // Get session token from cookie to delete it
     const sessionToken = request.cookies.get('session')?.value;
     
     if (sessionToken) {
-      // Delete session in MongoDB
-      await deleteSession(sessionToken);
+      if (USE_MOCK_DATA) {
+        await deactivateSession(sessionToken);
+      } else {
+        await deleteSession(sessionToken);
+      }
     }
 
     // Clear the session cookie

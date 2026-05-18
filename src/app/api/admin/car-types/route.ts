@@ -1,25 +1,20 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { dbConnect } from '@/lib/mongodb';
 import { Category } from '@/models/Category';
+import { USE_MOCK_DATA } from '@/lib/data-source';
+import { getStoreCategories } from '@/lib/mock-store';
 
-// GET /api/admin/car-types - Get distinct car types for filter dropdown
 export async function GET(_request: NextRequest) {
   try {
-    // TODO: Add proper admin authentication
-    // For now, we'll allow access without authentication to match other admin routes
-    // In production, you should implement proper admin role checking:
-    // const session = await getSessionFromRequest(request);
-    // if (!session) {
-    //   return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
-    // }
-    // const user = await User.findById(session.userId);
-    // if (!isAdminRole(user.role)) {
-    //   return NextResponse.json({ error: 'Forbidden' }, { status: 403 });
-    // }
+    if (USE_MOCK_DATA) {
+      const carTypes = getStoreCategories()
+        .filter((c) => c.status === 'Active' && c.capacity)
+        .map((c) => c.name);
+      return NextResponse.json({ carTypes: ['All', ...carTypes] });
+    }
 
     await dbConnect();
 
-    // Get all active categories
     const categories = await Category.find({ status: 'Active' })
       .select('name')
       .sort({ name: 1 })

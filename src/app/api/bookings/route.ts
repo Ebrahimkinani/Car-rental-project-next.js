@@ -5,13 +5,13 @@ import { Booking } from '../../../../lib/models/Booking';
 import { Car } from '../../../../lib/models/Car';
 import mongoose from 'mongoose';
 import { createNotification } from '@/lib/notifications';
+import { USE_MOCK_DATA } from '@/lib/data-source';
+import { createMockBooking, getMockBookings } from '@/lib/mock-auth-store';
+import { getStoreCarById } from '@/lib/mock-store';
 
 // GET /api/bookings - Get user's bookings
 export async function GET(request: NextRequest) {
   try {
-    await dbConnect();
-
-    // Get user from authenticated request
     const session = await getSessionFromRequest(request);
     if (!session) {
       return NextResponse.json(
@@ -19,6 +19,12 @@ export async function GET(request: NextRequest) {
         { status: 401 }
       );
     }
+
+    if (USE_MOCK_DATA) {
+      return NextResponse.json(getMockBookings(session.userId));
+    }
+
+    await dbConnect();
     
     const bookings = await Booking.find({ userId: session.userId })
       .populate('carId', 'name model brand images price')
@@ -79,9 +85,6 @@ export async function GET(request: NextRequest) {
 // POST /api/bookings - Create a new booking
 export async function POST(request: NextRequest) {
   try {
-    await dbConnect();
-
-    // Get user from authenticated request
     const session = await getSessionFromRequest(request);
     if (!session) {
       return NextResponse.json(
@@ -89,8 +92,73 @@ export async function POST(request: NextRequest) {
         { status: 401 }
       );
     }
-    
+
     const bookingData = await request.json();
+
+    if (USE_MOCK_DATA) {
+      const {
+        carId,
+        pickupDate,
+        returnDate,
+        pickupLocation,
+        returnLocation,
+        pickupTime,
+        returnTime,
+        rentalDays,
+        dailyRate,
+        totalAmount,
+        notes,
+        driverAge,
+        additionalDriver,
+        insurance,
+      } = bookingData;
+
+      if (
+        !carId ||
+        !pickupDate ||
+        !returnDate ||
+        !pickupLocation ||
+        !pickupTime ||
+        !returnTime ||
+        !rentalDays ||
+        !dailyRate ||
+        !totalAmount
+      ) {
+        return NextResponse.json(
+          { error: 'Missing required fields' },
+          { status: 400 }
+        );
+      }
+
+      if (!getStoreCarById(carId)) {
+        return NextResponse.json({ error: 'Car not found' }, { status: 404 });
+      }
+
+      const booking = createMockBooking(session.userId, {
+        carId,
+        pickupDate,
+        returnDate,
+        pickupLocation,
+        returnLocation,
+        pickupTime,
+        returnTime,
+        rentalDays: parseInt(rentalDays, 10),
+        dailyRate: parseFloat(dailyRate),
+        totalAmount: parseFloat(totalAmount),
+        notes,
+        driverAge,
+        additionalDriver: Boolean(additionalDriver),
+        insurance,
+      });
+
+      return NextResponse.json(
+        { message: 'Booking created successfully', booking },
+        { status: 201 }
+      );
+    }
+
+    await dbConnect();
+    
     const {
       carId,
       pickupDate,

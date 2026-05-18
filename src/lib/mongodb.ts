@@ -12,7 +12,9 @@ const MONGODB_URI = process.env.MONGODB_URI;
 const MONGODB_DB = process.env.MONGODB_DB; // e.g. "cars-project"
 
 if (!MONGODB_URI) {
-  throw new Error("❌ MONGODB_URI is not defined in .env.local");
+  console.warn(
+    "⚠️ MONGODB_URI is not defined — database calls will fail until configured."
+  );
 }
 
 // keep a global cache so Next.js hot reload doesn't create many connections
@@ -26,6 +28,12 @@ if (!cached) {
 }
 
 export async function dbConnect() {
+  if (!MONGODB_URI) {
+    throw new Error(
+      "❌ MONGODB_URI is not defined in .env.local — cannot connect to database."
+    );
+  }
+
   // return existing connection
   if (cached!.conn) {
     return cached!.conn;
@@ -36,6 +44,8 @@ export async function dbConnect() {
     const opts: ConnectOptions = {
       dbName: MONGODB_DB,
       maxPoolSize: 10,
+      serverSelectionTimeoutMS: 5000,
+      connectTimeoutMS: 5000,
     };
 
     cached!.promise = mongoose

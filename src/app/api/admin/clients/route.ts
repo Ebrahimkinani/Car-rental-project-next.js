@@ -1,8 +1,9 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { dbConnect } from '@/lib/mongodb';
 import mongoose from 'mongoose';
-// import { getSessionFromRequest } from '@/lib/auth';
 import { UserDoc } from '@/lib/types/db';
+import { USE_MOCK_DATA } from '@/lib/data-source';
+import { filterStoreClients } from '@/lib/mock-store';
 
 // Types for the API response
 export interface ClientRow {
@@ -46,9 +47,6 @@ export async function GET(request: NextRequest) {
     //   return NextResponse.json({ error: 'Forbidden' }, { status: 403 });
     // }
 
-    await dbConnect();
-
-    // Parse query parameters
     const { searchParams } = new URL(request.url);
     const search = searchParams.get('search') || '';
     const branch = searchParams.get('branch') || 'All';
@@ -61,7 +59,25 @@ export async function GET(request: NextRequest) {
     const sortBy = searchParams.get('sortBy') || 'name';
     const sortOrder = searchParams.get('sortOrder') || 'asc';
 
-    // Calculate pagination
+    if (USE_MOCK_DATA) {
+      return NextResponse.json(
+        filterStoreClients({
+          search,
+          branch,
+          tier,
+          status,
+          from,
+          to,
+          sortBy,
+          sortOrder,
+          page,
+          limit,
+        })
+      );
+    }
+
+    await dbConnect();
+
     const skip = (page - 1) * limit;
 
     // Build MongoDB aggregation pipeline

@@ -11,6 +11,8 @@ import { NextRequest, NextResponse } from 'next/server';
 import { createUser } from '@/lib/db/users';
 import { createSession } from '@/lib/auth';
 import type { UserRole } from '@/lib/db/users';
+import { USE_MOCK_DATA } from '@/lib/data-source';
+import { registerMockUser, toPublicMockUser } from '@/lib/mock-auth-store';
 
 export async function POST(request: NextRequest) {
   try {
@@ -49,6 +51,46 @@ export async function POST(request: NextRequest) {
         { ok: false, error: 'Invalid role' },
         { status: 400 }
       );
+    }
+
+    if (USE_MOCK_DATA) {
+      try {
+        const user = registerMockUser({
+          email,
+          password,
+          role: role as UserRole,
+          firstName,
+          lastName,
+          phone,
+        });
+
+        const sessionToken = await createSession(
+          user.id,
+          user.email,
+          `${user.firstName} ${user.lastName}`.trim()
+        );
+
+        const response = NextResponse.json({
+          ok: true,
+          user: toPublicMockUser(user),
+        });
+
+        response.cookies.set('session', sessionToken, {
+          httpOnly: true,
+          secure: process.env.NODE_ENV === 'production',
+          sameSite: 'lax',
+          path: '/',
+          maxAge: 7 * 24 * 60 * 60,
+        });
+
+        return response;
+      } catch (error: unknown) {
+        const message = error instanceof Error ? error.message : 'Registration failed';
+        if (message.includes('already exists')) {
+          return NextResponse.json({ ok: false, error: message }, { status: 409 });
+        }
+        throw error;
+      }
     }
 
     // Create user

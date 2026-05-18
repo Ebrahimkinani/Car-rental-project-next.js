@@ -2,6 +2,8 @@ import { NextRequest, NextResponse } from 'next/server';
 import { getDb } from '@/lib/db/mongo';
 import { ObjectId } from 'mongodb';
 import { createUser, findUserByEmail } from '@/lib/db/users';
+import { USE_MOCK_DATA } from '@/lib/data-source';
+import { MOCK_ADMIN_USERS } from '@/data/mock-admin-users';
 
 // TODO: Implement checkUserRole(req, allowedRoles) middleware for security
 // Only Admin users can access this page or modify permissions
@@ -35,12 +37,22 @@ type PermissionSet = {
 // GET /api/admin/users - Get all users with search support
 export async function GET(request: NextRequest) {
   try {
-    const db = await getDb();
-    const users = db.collection<AdminUserDoc>('adminUsers');
-
-    // Parse query parameters
     const { searchParams } = new URL(request.url);
     const search = searchParams.get('search') || '';
+
+    if (USE_MOCK_DATA) {
+      const q = search.trim().toLowerCase();
+      const filtered = q
+        ? MOCK_ADMIN_USERS.filter(
+            (u) =>
+              u.name.toLowerCase().includes(q) || u.email.toLowerCase().includes(q)
+          )
+        : MOCK_ADMIN_USERS;
+      return NextResponse.json({ users: filtered, total: filtered.length });
+    }
+
+    const db = await getDb();
+    const users = db.collection<AdminUserDoc>('adminUsers');
 
     // Build query
     const query: any = {};

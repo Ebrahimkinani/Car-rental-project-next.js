@@ -1,5 +1,16 @@
 import { Car, AdminCarSettings } from "@/types";
-// import { sampleCars } from "@/lib/sampleData"; // Deprecated - using MongoDB API
+import { USE_MOCK_DATA } from "@/lib/data-source";
+import {
+  getCars,
+  getCarById as getCarByIdFromLib,
+  getCarsByCategory,
+  getCarsByBrand as getCarsByBrandFromLib,
+  createCarInStore,
+  updateCarInStore,
+  deleteCarFromStore,
+} from "@/lib/cars";
+
+// Temporary mock data mode for UI/UX client preview. Replace with database queries later.
 
 /**
  * Cars Service
@@ -19,6 +30,10 @@ import { Car, AdminCarSettings } from "@/types";
  * Get all cars from MongoDB API
  */
 export async function getAllCarsFromStorage(): Promise<Car[]> {
+  if (USE_MOCK_DATA) {
+    return getCars();
+  }
+
   try {
     // Handle both client-side and server-side requests
     const baseUrl = typeof window !== 'undefined' 
@@ -56,8 +71,12 @@ export async function getAllCarsFromStorage(): Promise<Car[]> {
  * Get a car by its ID from MongoDB API
  */
 export async function getCarByIdFromStorage(id: string): Promise<Car | null> {
+  if (USE_MOCK_DATA) {
+    return getCarByIdFromLib(id);
+  }
+
   try {
-    // For server-side rendering, use direct database access
+    /* DATABASE_MODE — SSR direct DB access (uncomment when reconnecting MongoDB)
     if (typeof window === 'undefined') {
       const { Car } = await import('../../../lib/models/Car');
       const { dbConnect } = await import('@/lib/mongodb');
@@ -72,6 +91,7 @@ export async function getCarByIdFromStorage(id: string): Promise<Car | null> {
       
       return transformCarForAPI(car);
     }
+    */
     
     // For client-side, use API
     const response = await fetch(`/api/cars/${id}`);
@@ -127,6 +147,10 @@ export function getAllCars(): Car[] {
  * Create a new car via MongoDB API
  */
 export async function createCar(carData: Omit<Car, "id" | "createdAt" | "updatedAt">): Promise<Car> {
+  if (USE_MOCK_DATA) {
+    return createCarInStore(carData);
+  }
+
   try {
     const response = await fetch('/api/cars', {
       method: 'POST',
@@ -165,6 +189,10 @@ export async function createCar(carData: Omit<Car, "id" | "createdAt" | "updated
  * Update an existing car via MongoDB API
  */
 export async function updateCar(id: string, updates: Partial<Omit<Car, "id" | "createdAt">>): Promise<Car> {
+  if (USE_MOCK_DATA) {
+    return updateCarInStore(id, updates);
+  }
+
   try {
     const response = await fetch(`/api/cars/${id}`, {
       method: 'PUT',
@@ -201,6 +229,10 @@ export async function updateCar(id: string, updates: Partial<Omit<Car, "id" | "c
  * Delete a car via MongoDB API
  */
 export async function deleteCar(id: string): Promise<boolean> {
+  if (USE_MOCK_DATA) {
+    return deleteCarFromStore(id);
+  }
+
   try {
     const response = await fetch(`/api/cars/${id}`, {
       method: 'DELETE',
@@ -246,8 +278,11 @@ export function getCarsByBrand(_brandId: string): Car[] {
  * @returns Array of cars from that brand
  */
 export async function getCarsByBrandFromStorage(brandId: string): Promise<Car[]> {
+  if (USE_MOCK_DATA) {
+    return getCarsByBrandFromLib(brandId);
+  }
   const cars = await getAllCarsFromStorage();
-  return cars.filter(car => car.brandId === brandId);
+  return cars.filter((car) => car.brandId === brandId);
 }
 
 /**
@@ -256,6 +291,10 @@ export async function getCarsByBrandFromStorage(brandId: string): Promise<Car[]>
  * @returns Array of cars from that category
  */
 export async function getCarsByCategoryFromStorage(categoryId: string): Promise<Car[]> {
+  if (USE_MOCK_DATA) {
+    return getCarsByCategory(categoryId);
+  }
+
   try {
     // Handle both client-side and server-side requests
     const baseUrl = typeof window !== 'undefined' 

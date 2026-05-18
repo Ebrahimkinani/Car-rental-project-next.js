@@ -7,6 +7,7 @@ import PermissionsMatrix from "../../_components/Permissions/PermissionsMatrix";
 import UsersPanel from "../../_components/Permissions/UsersPanle";
 import UserCreationForm from "../../_components/Permissions/UserCreationForm";
 import type { User, UserRole, PermissionSet } from "../../_components/Users/Types/User";
+import { MOCK_ADMIN_USERS } from "@/data/mock-admin-users";
 
 /** Roles shown in matrix */
 const ROLES: Role[] = ["Admin", "Manager", "Agent", "Viewer"];
@@ -62,35 +63,13 @@ function buildDefaultMatrix(): RoleMatrix {
 
 export default function PermissionsPage() {
   // users state
-  const [users, setUsers] = useState<User[]>([]);
-  const [selectedUserId, setSelectedUserId] = useState<string | undefined>(undefined);
-  const [loading, setLoading] = useState(true);
+  const [users, setUsers] = useState<User[]>(MOCK_ADMIN_USERS);
+  const [selectedUserId, setSelectedUserId] = useState<string | undefined>(MOCK_ADMIN_USERS[0]?.id);
+  const loading = false;
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
-  // Fetch users from API
-  useEffect(() => {
-    const fetchUsers = async () => {
-      try {
-        setLoading(true);
-        const response = await fetch('/api/admin/users');
-        const data = await response.json();
-        if (data.users) {
-          setUsers(data.users);
-          if (data.users.length > 0) {
-            setSelectedUserId(data.users[0].id);
-          }
-        }
-      } catch (err) {
-        setError('Failed to load users');
-        console.error('Error fetching users:', err);
-      } finally {
-        setLoading(false);
-      }
-    };
-    
-    fetchUsers();
-  }, []);
+  // Preview mode uses MOCK_ADMIN_USERS — no API fetch on mount
 
   // matrix state
   const [filter, setFilter] = useState("");

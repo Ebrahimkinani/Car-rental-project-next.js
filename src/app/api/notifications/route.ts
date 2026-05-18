@@ -4,12 +4,17 @@ import { verifySession } from '@/lib/auth/verifySession';
 import { dbConnect } from '@/lib/mongodb';
 import { Notification, NotificationDocument } from '@/models/Notification';
 import { pushToUserSocket } from '@/lib/realtime';
+import { USE_MOCK_DATA } from '@/lib/data-source';
 
 // GET /api/notifications - current user's notifications
 export async function GET(request: NextRequest) {
   const session = await verifySession(request);
   if (!session) {
     return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+  }
+
+  if (USE_MOCK_DATA) {
+    return NextResponse.json([]);
   }
 
   await dbConnect();

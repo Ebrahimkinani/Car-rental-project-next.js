@@ -1,6 +1,9 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { dbConnect } from '@/lib/mongodb';
 import { getDb } from '@/lib/db/mongo';
+import { USE_MOCK_DATA } from '@/lib/data-source';
+import { filterStoreExpenses, getStoreExpenses } from '@/lib/mock-store';
+import type { Expense } from '@/app/(admin)/_components/types/ExpenseTypes';
 
 // Types for the API response
 export interface ExpenseRow {
@@ -50,11 +53,6 @@ export async function GET(request: NextRequest) {
     //   return NextResponse.json({ error: 'Forbidden - Admin access required' }, { status: 403 });
     // }
 
-    await dbConnect();
-    const db = await getDb();
-    const expensesCollection = db.collection('expenses');
-
-    // Parse query parameters
     const { searchParams } = new URL(request.url);
     const status = searchParams.get('status') || 'All';
     const category = searchParams.get('category') || 'All';
@@ -69,6 +67,30 @@ export async function GET(request: NextRequest) {
     const limit = parseInt(searchParams.get('limit') || '10');
     const sortBy = searchParams.get('sortBy') || 'date';
     const sortDir = searchParams.get('sortDir') || 'desc';
+
+    if (USE_MOCK_DATA) {
+      return NextResponse.json(
+        filterStoreExpenses({
+          status,
+          category,
+          method,
+          vendor,
+          search,
+          from,
+          to,
+          min,
+          max,
+          page,
+          limit,
+          sortBy,
+          sortDir,
+        })
+      );
+    }
+
+    await dbConnect();
+    const db = await getDb();
+    const expensesCollection = db.collection('expenses');
 
     // Build MongoDB query
     const query: any = {};
@@ -325,12 +347,35 @@ export async function POST(request: NextRequest) {
     //   return NextResponse.json({ error: 'Forbidden - Admin access required' }, { status: 403 });
     // }
 
+    const body = await request.json();
+    const { date, category, vendor, description, method, status, amount } = body;
+
+    if (USE_MOCK_DATA) {
+      if (!date || !category || !vendor || !description || !method || !status || amount === undefined) {
+        return NextResponse.json(
+          { error: 'Missing required fields: date, category, vendor, description, method, status, amount' },
+          { status: 400 }
+        );
+      }
+
+      const expense: Expense = {
+        id: `exp-${Date.now()}`,
+        date: typeof date === 'string' ? date.split('T')[0]! : new Date(date).toISOString().split('T')[0]!,
+        category,
+        vendor: vendor.trim(),
+        description: description.trim(),
+        method,
+        status,
+        amount,
+      };
+
+      getStoreExpenses().push(expense);
+      return NextResponse.json(expense, { status: 201 });
+    }
+
     await dbConnect();
     const db = await getDb();
     const expensesCollection = db.collection('expenses');
-
-    const body = await request.json();
-    const { date, category, vendor, description, method, status, amount } = body;
 
     // TODO: add input validation (zod) for creating expenses
     // Validate required fields

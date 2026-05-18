@@ -3,6 +3,7 @@
 import { createContext, useContext, useEffect, useState, ReactNode } from 'react';
 import { useRouter } from 'next/navigation';
 import type { User, AuthContextType, AuthState } from '@/types';
+import { IS_PREVIEW_MODE, PREVIEW_STAFF_USER } from '@/lib/preview-mode';
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
@@ -25,20 +26,34 @@ export function AuthProvider({ children }: AuthProviderProps) {
     error: null,
   });
 
-  // Load user data from MongoDB session
   const loadUserDataFromSession = async (): Promise<void> => {
     try {
       setState(prev => ({ ...prev, loading: true, error: null }));
 
+      const controller = new AbortController();
+      const timeoutId = setTimeout(() => controller.abort(), 4000);
+
       const response = await fetch('/api/me', {
         credentials: 'include',
+        signal: controller.signal,
       });
+
+      clearTimeout(timeoutId);
 
       // /api/me ALWAYS returns 200, never throws
       const result = await response.json();
       
       // Check if user exists
       if (!result.user) {
+        if (IS_PREVIEW_MODE && typeof window !== 'undefined' && window.location.pathname.startsWith('/admin')) {
+          setState(prev => ({
+            ...prev,
+            user: PREVIEW_STAFF_USER as User,
+            loading: false,
+            error: null,
+          }));
+          return;
+        }
         setState(prev => ({
           ...prev,
           user: null,
@@ -86,6 +101,15 @@ export function AuthProvider({ children }: AuthProviderProps) {
       
     } catch (error) {
       console.error('[AuthContext] Error loading user data from session:', error);
+      if (IS_PREVIEW_MODE && typeof window !== 'undefined' && window.location.pathname.startsWith('/admin')) {
+        setState(prev => ({
+          ...prev,
+          user: PREVIEW_STAFF_USER as User,
+          loading: false,
+          error: null,
+        }));
+        return;
+      }
       setState(prev => ({
         ...prev,
         user: null,

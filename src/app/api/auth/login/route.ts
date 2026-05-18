@@ -9,6 +9,12 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { findUserByEmail, validatePassword } from '@/lib/db/users';
 import { createSession } from '@/lib/auth';
+import { USE_MOCK_DATA } from '@/lib/data-source';
+import {
+  findMockUserByEmail,
+  validateMockPassword,
+  toPublicMockUser,
+} from '@/lib/mock-auth-store';
 
 export async function POST(request: NextRequest) {
   try {
@@ -21,6 +27,40 @@ export async function POST(request: NextRequest) {
         { ok: false, error: 'Email and password are required' },
         { status: 400 }
       );
+    }
+
+    if (USE_MOCK_DATA) {
+      const mockUser = findMockUserByEmail(email);
+      if (!mockUser || !validateMockPassword(mockUser, password)) {
+        return NextResponse.json(
+          { ok: false, error: 'Invalid email or password' },
+          { status: 401 }
+        );
+      }
+
+      if (mockUser.status !== 'active') {
+        return NextResponse.json(
+          { ok: false, error: 'Account is not active', status: mockUser.status },
+          { status: 403 }
+        );
+      }
+
+      const sessionToken = await createSession(
+        mockUser.id,
+        mockUser.email,
+        `${mockUser.firstName} ${mockUser.lastName}`.trim()
+      );
+
+      const publicUser = toPublicMockUser(mockUser);
+      const response = NextResponse.json({ ok: true, user: publicUser });
+      response.cookies.set('session', sessionToken, {
+        httpOnly: true,
+        secure: process.env.NODE_ENV === 'production',
+        sameSite: 'lax',
+        path: '/',
+        maxAge: 7 * 24 * 60 * 60,
+      });
+      return response;
     }
 
     // Find user

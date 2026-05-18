@@ -55,6 +55,14 @@ export function Navbar() {
         }
     };
 
+    const staffRoles = ["admin", "manager", "employee"];
+    const isStaff = Boolean(
+        user && staffRoles.includes(user.role?.toLowerCase() ?? "")
+    );
+
+    const dashboardLinkClass =
+        "rounded-lg border border-primary-500 text-black! hover:text-primary-500! hover:border-primary-600 hover:bg-white px-3 md:px-3 lg:px-4 py-2 text-xs md:text-xs lg:text-sm font-medium transition-all duration-300";
+
     return (
         <nav className="fixed top-5 left-0 right-0 z-50">
             <div className="mx-auto max-w-[95%] px-4 sm:px-6 lg:px-8">
@@ -76,14 +84,14 @@ export function Navbar() {
                     {/* Desktop Navigation */}
                     <div className="hidden md:flex md:items-center md:space-x-8">
                         {
-                        NAV_LINKS.map((link, index) => (
+                        NAV_LINKS.map((link) => (
                             <Fragment key={link.href}>
                                 <Link
                                     href={link.href}
                                     className="text-xs md:text-xs lg:text-sm font-medium text-black! hover:text-primary-500! transition-colors duration-300">
                                     {link.label}
                                 </Link>
-                                {index === 0 && (
+                                {link.href === "/cars" && (
                                     <Link href="/cars/category" className="text-xs md:text-xs lg:text-sm font-medium text-black! hover:text-primary-500! transition-colors duration-300">
                                         Categories
                                     </Link>
@@ -96,7 +104,15 @@ export function Navbar() {
                     <div className="flex items-center space-x-4">
                         {
                         user ? (
-                            <> {/* Username and Bell Icon */}
+                            <>
+                                {isStaff && (
+                                    <Link
+                                        href="/admin/dashboard"
+                                        className={cn(dashboardLinkClass, "hidden md:block")}
+                                    >
+                                        Dashboard
+                                    </Link>
+                                )}
                                 <div className="hidden md:flex md:items-center md:space-x-2">
                                     <span className="text-xs md:text-xs lg:text-sm text-black! font-medium">
                                         {
@@ -125,6 +141,12 @@ export function Navbar() {
                             </>
                         ) : (
                             <>
+                                <Link
+                                    href="/admin/dashboard"
+                                    className={cn(dashboardLinkClass, "hidden md:block")}
+                                >
+                                    Dashboard
+                                </Link>
                                 <Link href="/auth/login" className="hidden md:block rounded-lg border border-gray-300 text-black! hover:text-black! hover:border-gray-400 hover:bg-gray-50 px-3 md:px-3 lg:px-4 py-2 text-xs md:text-xs lg:text-sm font-medium transition-all duration-300">
                                     Sign In
                                 </Link>
@@ -160,7 +182,7 @@ export function Navbar() {
                     cn("space-y-1 rounded-2xl backdrop-blur-md border shadow-lg px-4 pb-3 pt-2 transition-all duration-300", isInHero ? "bg-white/20 border-white/30" : "bg-white/90 border-gray-200")
                 }>
                     {
-                    NAV_LINKS.map((link, index) => (
+                    NAV_LINKS.map((link) => (
                         <Fragment key={link.href}>
                             <Link
                                 href={link.href}
@@ -168,7 +190,7 @@ export function Navbar() {
                                 onClick={() => setMobileMenuOpen(false)}>
                                 {link.label}
                             </Link>
-                            {index === 0 && (
+                            {link.href === "/cars" && (
                                 <Link href="/cars/category" className="block rounded-lg px-3 py-2 text-base font-medium text-black! hover:text-primary-500! hover:bg-gray-100 transition-colors" onClick={() => setMobileMenuOpen(false)}>
                                     Categories
                                 </Link>
@@ -184,6 +206,15 @@ export function Navbar() {
                                 Welcome, {
                                 user.firstName || user.username
                             } </div>
+                            {isStaff && (
+                                <Link
+                                    href="/admin/dashboard"
+                                    className={cn(dashboardLinkClass, "block text-center")}
+                                    onClick={() => setMobileMenuOpen(false)}
+                                >
+                                    Dashboard
+                                </Link>
+                            )}
                             <Link href="/profile" className="flex items-center gap-2 rounded-lg border border-primary-500 text-black! hover:text-primary-500! hover:border-primary-600 hover:bg-gray-50 px-4 py-2 text-base font-medium transition-all duration-300"
                                 onClick={
                                     () => setMobileMenuOpen(false)
@@ -204,6 +235,13 @@ export function Navbar() {
                         </>
                     ) : (
                         <>
+                            <Link
+                                href="/admin/dashboard"
+                                className={cn(dashboardLinkClass, "block text-center")}
+                                onClick={() => setMobileMenuOpen(false)}
+                            >
+                                Dashboard
+                            </Link>
                             <Link href="/auth/login" className="block rounded-lg border border-gray-300 text-black! hover:text-black! hover:border-gray-400 hover:bg-gray-50 px-4 py-2 text-base font-medium transition-all duration-300"
                                 onClick={
                                     () => setMobileMenuOpen(false)

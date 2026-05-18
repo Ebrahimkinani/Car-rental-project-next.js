@@ -1,13 +1,14 @@
 "use client";
 
 import { useState, useEffect, useCallback } from "react";
-import type { Expense, ExpensesResponse, DailyPoint, ExpensesKPIs } from "../../../_components/types/ExpenseTypes";
+import type { Expense, DailyPoint, ExpensesKPIs } from "../../../_components/types/ExpenseTypes";
 import ExpenseFilters from "../../../_components/filters/ExpensesFilters";
 import { StatsGrid } from "@/components/ui/stats-card";
 import ExpensesTrend from "../../../_components/charts/ExpensesTrends";
 import ExpensesTable from "../../../_components/tables/ExpensesTables";
 import AddExpenseModal from "../../../_components/modals/AddExpenseModal";
 import { DollarSign, Calendar, TrendingUp, Tag } from "lucide-react";
+import { filterStoreExpenses } from "@/lib/mock-store";
 
 function toCurrency(n: number) {
   return new Intl.NumberFormat('en-US', {
@@ -32,66 +33,45 @@ export default function ExpensesPage() {
   const [minAmt, setMinAmt] = useState("");
   const [maxAmt, setMaxAmt] = useState("");
   
-  // Data and state
-  const [data, setData] = useState<Expense[]>([]);
-  const [kpis, setKpis] = useState<ExpensesKPIs>({
-    totalAllTime: 0,
-    totalThisMonth: 0,
-    avgPerDay: 0,
-    topCategory: null
-  });
-  const [trend, setTrend] = useState<DailyPoint[]>([]);
-  const [filteredTotal, setFilteredTotal] = useState(0);
-  const [total, setTotal] = useState(0);
+  const initialExpenseData = filterStoreExpenses({ page: 1, limit: 10 });
+
+  const [data, setData] = useState<Expense[]>(initialExpenseData.data);
+  const [kpis, setKpis] = useState<ExpensesKPIs>(initialExpenseData.kpis);
+  const [trend, setTrend] = useState<DailyPoint[]>(initialExpenseData.trend);
+  const [filteredTotal, setFilteredTotal] = useState(initialExpenseData.filteredTotal);
+  const [total, setTotal] = useState(initialExpenseData.total);
   const [page, setPage] = useState(1);
-  const [pageCount, setPageCount] = useState(1);
-  const [loading, setLoading] = useState(true);
+  const [pageCount, setPageCount] = useState(initialExpenseData.pageCount);
+  const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
   
   // Modal state
   const [isAddModalOpen, setIsAddModalOpen] = useState(false);
 
-  // Fetch data from API
-  const fetchExpenses = useCallback(async () => {
-    setLoading(true);
+  const fetchExpenses = useCallback(() => {
     setError("");
-    
-    try {
-      const params = new URLSearchParams({
-        status: status !== "All" ? status : "",
-        category: category !== "All" ? category : "",
-        method: method !== "All" ? method : "",
-        vendor: vendor !== "All" ? vendor : "",
-        search: query,
-        from: dateFrom,
-        to: dateTo,
-        min: minAmt,
-        max: maxAmt,
-        page: page.toString(),
-        limit: "10",
-        sortBy: "date",
-        sortDir: "desc"
-      });
-
-      const response = await fetch(`/api/admin/expenses?${params}`);
-      if (!response.ok) {
-        throw new Error('Failed to fetch expenses');
-      }
-
-      const result: ExpensesResponse = await response.json();
-      setData(result.data);
-      setKpis(result.kpis);
-      setTrend(result.trend);
-      setFilteredTotal(result.filteredTotal);
-      setTotal(result.total);
-      setPageCount(result.pageCount);
-      
-    } catch (err) {
-      setError(err instanceof Error ? err.message : 'An error occurred');
-      console.error('Error fetching expenses:', err);
-    } finally {
-      setLoading(false);
-    }
+    const result = filterStoreExpenses({
+      status,
+      category,
+      method,
+      vendor,
+      search: query,
+      from: dateFrom,
+      to: dateTo,
+      min: minAmt,
+      max: maxAmt,
+      page,
+      limit: 10,
+      sortBy: "date",
+      sortDir: "desc",
+    });
+    setData(result.data);
+    setKpis(result.kpis);
+    setTrend(result.trend);
+    setFilteredTotal(result.filteredTotal);
+    setTotal(result.total);
+    setPageCount(result.pageCount);
+    setLoading(false);
   }, [query, category, vendor, method, status, dateFrom, dateTo, minAmt, maxAmt, page]);
 
   // Fetch data when filters change

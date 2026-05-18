@@ -15,20 +15,27 @@ import { NextResponse } from 'next/server';
 import { dbConnect } from '@/lib/mongodb';
 import { getSessionFromCookie } from '@/lib/auth';
 import { findUserById } from '@/lib/db/users';
+import { USE_MOCK_DATA } from '@/lib/data-source';
+import { findMockUserById, toPublicMockUser } from '@/lib/mock-auth-store';
 
 export async function GET() {
   try {
-    // Connect to database
-    await dbConnect();
-    
-    // Get session payload from cookie
     const sessionPayload = await getSessionFromCookie();
     
     if (!sessionPayload) {
       return NextResponse.json({ user: null }, { status: 200 });
     }
+
+    if (USE_MOCK_DATA) {
+      const mockUser = findMockUserById(sessionPayload.userId);
+      if (!mockUser) {
+        return NextResponse.json({ user: null }, { status: 200 });
+      }
+      return NextResponse.json({ user: toPublicMockUser(mockUser) });
+    }
+
+    await dbConnect();
     
-    // Get user from database
     const user = await findUserById(sessionPayload.userId);
     if (!user) {
       return NextResponse.json({ user: null }, { status: 200 });

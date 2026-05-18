@@ -16,6 +16,9 @@
 # production
 /build
 
+# local MongoDB data (dev)
+.mongodb-data/
+
 # misc
 .DS_Store
 *.pem

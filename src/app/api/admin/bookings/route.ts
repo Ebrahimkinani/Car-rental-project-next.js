@@ -4,6 +4,8 @@ import { requireAuth } from '@/lib/auth/requireAuth';
 import { Booking } from '@/models/Booking';
 import { Car } from '@/models/Car';
 import { Category } from '@/models/Category';
+import { USE_MOCK_DATA } from '@/lib/data-source';
+import { filterAdminBookings } from '@/lib/mock-store';
 
 // Types for the API response
 export interface AdminBookingRow {
@@ -46,12 +48,8 @@ function generateBookingNumber(id: string): string {
 // GET /api/admin/bookings - Get all bookings with filtering and pagination
 export async function GET(request: NextRequest) {
   try {
-    // Require admin, manager, or employee role
     await requireAuth(request, ['admin', 'manager', 'employee']);
 
-    await dbConnect();
-
-    // Parse query parameters
     const { searchParams } = new URL(request.url);
     const status = searchParams.get('status') || 'all';
     const search = searchParams.get('search') || '';
@@ -60,6 +58,21 @@ export async function GET(request: NextRequest) {
     const to = searchParams.get('to') || '';
     const page = parseInt(searchParams.get('page') || '1');
     const limit = parseInt(searchParams.get('limit') || '10');
+
+    if (USE_MOCK_DATA) {
+      const result = filterAdminBookings({
+        status,
+        search,
+        carType,
+        from,
+        to,
+        page,
+        limit,
+      });
+      return NextResponse.json(result);
+    }
+
+    await dbConnect();
 
     // Build MongoDB query
     const query: any = {};

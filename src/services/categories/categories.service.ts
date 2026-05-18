@@ -1,4 +1,16 @@
 import { Category } from "@/types";
+import { USE_MOCK_DATA } from "@/lib/data-source";
+import {
+  getCategories,
+  getCategoryById as getCategoryByIdLib,
+  getCategoryBySlug as getCategoryBySlugLib,
+  getActiveCategories as getActiveCategoriesLib,
+  createCategoryInStore,
+  updateCategoryInStore,
+  deleteCategoryFromStore,
+} from "@/lib/categories";
+
+// Temporary mock data mode for UI/UX client preview. Replace with database queries later.
 
 /**
  * Categories Service
@@ -18,6 +30,10 @@ import { Category } from "@/types";
  * Get all categories from MongoDB API
  */
 export async function getAllCategories(): Promise<Category[]> {
+  if (USE_MOCK_DATA) {
+    return getCategories();
+  }
+
   try {
     const response = await fetch('/api/categories');
     
@@ -51,6 +67,10 @@ export async function getAllCategories(): Promise<Category[]> {
  * Get category by ID from MongoDB API
  */
 export async function getCategoryById(id: string): Promise<Category | null> {
+  if (USE_MOCK_DATA) {
+    return getCategoryByIdLib(id);
+  }
+
   try {
     const response = await fetch(`/api/categories/${id}`);
     
@@ -84,6 +104,10 @@ export async function getCategoryById(id: string): Promise<Category | null> {
  * Get category by slug from MongoDB API
  */
 export async function getCategoryBySlug(slug: string): Promise<Category | null> {
+  if (USE_MOCK_DATA) {
+    return getCategoryBySlugLib(slug);
+  }
+
   try {
     const response = await fetch(`/api/categories/slug/${slug}`);
     
@@ -117,6 +141,9 @@ export async function getCategoryBySlug(slug: string): Promise<Category | null> 
  * Get active categories only from MongoDB API
  */
 export async function getActiveCategories(): Promise<Category[]> {
+  if (USE_MOCK_DATA) {
+    return getActiveCategoriesLib();
+  }
   const categories = await getAllCategories();
   return categories.filter(cat => cat.status === "Active");
 }
@@ -125,6 +152,10 @@ export async function getActiveCategories(): Promise<Category[]> {
  * Create a new category via MongoDB API
  */
 export async function createCategory(categoryData: Omit<Category, "id" | "createdAt" | "updatedAt">): Promise<Category> {
+  if (USE_MOCK_DATA) {
+    return createCategoryInStore(categoryData);
+  }
+
   try {
     const response = await fetch('/api/categories', {
       method: 'POST',
@@ -164,6 +195,10 @@ export async function createCategory(categoryData: Omit<Category, "id" | "create
  * Update an existing category via MongoDB API
  */
 export async function updateCategory(id: string, updates: Partial<Omit<Category, "id" | "createdAt">>): Promise<Category> {
+  if (USE_MOCK_DATA) {
+    return updateCategoryInStore(id, updates);
+  }
+
   try {
     const response = await fetch(`/api/categories/${id}`, {
       method: 'PUT',
@@ -203,6 +238,10 @@ export async function updateCategory(id: string, updates: Partial<Omit<Category,
  * Delete a category via MongoDB API
  */
 export async function deleteCategory(id: string): Promise<boolean> {
+  if (USE_MOCK_DATA) {
+    return deleteCategoryFromStore(id);
+  }
+
   try {
     const response = await fetch(`/api/categories/${id}`, {
       method: 'DELETE',

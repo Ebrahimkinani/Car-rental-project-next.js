@@ -15,6 +15,8 @@
 import { NextRequest } from 'next/server';
 import { getSessionFromRequest } from '@/lib/auth';
 import { findUserById } from '@/lib/db/users';
+import { USE_MOCK_DATA } from '@/lib/data-source';
+import { findMockUserById } from '@/lib/mock-auth-store';
 
 export interface VerifiedUser {
   id: string;
@@ -39,14 +41,27 @@ export async function verifySession(request: NextRequest): Promise<VerifiedUser 
       return null;
     }
 
-    // Get user from database using the userId from JWT payload
+    if (USE_MOCK_DATA) {
+      const mockUser = findMockUserById(sessionPayload.userId);
+      if (!mockUser) {
+        return null;
+      }
+      return {
+        id: mockUser.id,
+        email: mockUser.email,
+        role: mockUser.role.toLowerCase(),
+        status: mockUser.status.toLowerCase(),
+        firstName: mockUser.firstName,
+        lastName: mockUser.lastName,
+        phone: mockUser.phone,
+      };
+    }
+
     const user = await findUserById(sessionPayload.userId);
     if (!user) {
       return null;
     }
-    
-    // Return normalized user data
-    // CRITICAL: Normalize role and status to lowercase for consistent comparisons
+
     return {
       id: user._id!.toString(),
       email: user.email,

@@ -1,12 +1,18 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { dbConnect } from '@/lib/mongodb';
 import { Category } from '@/models/Category';
+import { USE_MOCK_DATA } from '@/lib/data-source';
+import { getStoreCategories } from '@/lib/mock-store';
 
 export async function GET() {
   try {
+    if (USE_MOCK_DATA) {
+      const categories = getStoreCategories().filter((c) => c.status === "Active");
+      return NextResponse.json({ success: true, data: categories });
+    }
+
     await dbConnect();
-    
-    // Handle both old (isActive) and new (status) field names for backward compatibility
+
     const categories = await Category.find({
       $or: [
         { status: "Active" },

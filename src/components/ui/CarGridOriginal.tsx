@@ -1,6 +1,7 @@
 "use client";
 
 import Image from "next/image";
+import { DEFAULT_CAR_IMAGE } from "@/data/car-images";
 import { Car } from "@/types";
 
 interface CarGridOriginalProps {
@@ -17,7 +18,7 @@ export default function CarGridOriginal({ cars, className = "" }: CarGridOrigina
           className="border border-gray-200 rounded-2xl p-4 bg-white hover:border-gray-400 transition-all duration-300 shadow-none"
         >
           <Image
-            src={car.images?.[0]?.trim() || "/images/hero/car1.png"}
+            src={car.images?.[0]?.trim() || DEFAULT_CAR_IMAGE}
             alt={car.name}
             width={300}
             height={180}

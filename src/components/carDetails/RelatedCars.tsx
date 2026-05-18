@@ -1,5 +1,6 @@
 "use client";
 
+import { DEFAULT_CAR_IMAGE } from "@/data/car-images";
 import {Car} from "@/types";
 import {cn} from "@/lib/utils";
 import Image from "next/image";
@@ -43,7 +44,7 @@ export default function RelatedCars({cars, className} : RelatedCarsProps) {
                         {/* Image Container */}
                         <div className="relative aspect-4/3 overflow-hidden">
                             <Image src={
-                                    car.images ?. [0] ?. trim() || "/images/hero/car1.png"
+                                    car.images?.[0]?.trim() || DEFAULT_CAR_IMAGE
                                 }
                                 alt={
                                     car.name

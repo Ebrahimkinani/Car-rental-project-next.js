@@ -8,6 +8,7 @@ import { cookies } from 'next/headers';
 import { NextRequest } from 'next/server';
 import { dbConnect } from '@/lib/mongodb';
 import Session from '@/models/Session';
+import { USE_MOCK_DATA } from '@/lib/data-source';
 
 // Types
 export interface SessionPayload {
@@ -39,9 +40,6 @@ export async function createSession(
   userAgent?: string
 ): Promise<string> {
   try {
-    await dbConnect();
-
-    // Generate JWT token
     const payload: Omit<SessionPayload, 'iat' | 'exp'> = {
       userId,
       email,
@@ -52,11 +50,15 @@ export async function createSession(
       expiresIn: '7d',
     });
 
-    // Decode token to get expiration date
+    if (USE_MOCK_DATA) {
+      return token;
+    }
+
+    await dbConnect();
+
     const decoded = jwt.decode(token) as SessionPayload;
     const expiresAt = new Date(decoded.exp * 1000);
 
-    // Save session to MongoDB
     const session = new Session({
       userId,
       token,
@@ -101,7 +103,6 @@ export async function getSessionFromCookie(): Promise<SessionPayload | null> {
       return null;
     }
 
-    // Verify JWT token (catch any errors)
     let payload: SessionPayload;
     try {
       payload = verifyJWTToken(sessionToken);
@@ -110,12 +111,15 @@ export async function getSessionFromCookie(): Promise<SessionPayload | null> {
       return null;
     }
 
-    // Check if session exists and is active in MongoDB
+    if (USE_MOCK_DATA) {
+      return payload;
+    }
+
     await dbConnect();
-    const session = await Session.findOne({ 
-      token: sessionToken, 
-      isActive: true, 
-      expiresAt: { $gt: new Date() } 
+    const session = await Session.findOne({
+      token: sessionToken,
+      isActive: true,
+      expiresAt: { $gt: new Date() },
     });
 
     if (!session) {
@@ -141,9 +145,6 @@ export async function getSessionFromRequest(request: NextRequest): Promise<Sessi
       return null;
     }
 
-    await dbConnect();
-
-    // Verify JWT token (catch any errors)
     let payload: SessionPayload;
     try {
       payload = verifyJWTToken(sessionToken);
@@ -152,11 +153,16 @@ export async function getSessionFromRequest(request: NextRequest): Promise<Sessi
       return null;
     }
 
-    // Check if session exists and is active in MongoDB
-    const session = await Session.findOne({ 
-      token: sessionToken, 
-      isActive: true, 
-      expiresAt: { $gt: new Date() } 
+    if (USE_MOCK_DATA) {
+      return payload;
+    }
+
+    await dbConnect();
+
+    const session = await Session.findOne({
+      token: sessionToken,
+      isActive: true,
+      expiresAt: { $gt: new Date() },
     });
 
     if (!session) {
@@ -173,6 +179,10 @@ export async function getSessionFromRequest(request: NextRequest): Promise<Sessi
  * Deactivate a session by token
  */
 export async function deactivateSession(token: string): Promise<boolean> {
+  if (USE_MOCK_DATA) {
+    return true;
+  }
+
   try {
     await dbConnect();
     const result = await Session.updateOne(

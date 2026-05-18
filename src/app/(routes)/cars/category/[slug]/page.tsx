@@ -54,7 +54,9 @@ export default function CategoryPage({ params }: CategoryPageProps) {
         setLoading(true);
         const categoryData = await categoriesApi.getBySlug(slug);
         if (!categoryData) {
-          notFound();
+          if (mounted) {
+            setCategory(null);
+          }
           return;
         }
         
@@ -69,7 +71,7 @@ export default function CategoryPage({ params }: CategoryPageProps) {
       } catch (error) {
         console.error("Error loading category data:", error);
         if (mounted) {
-          notFound();
+          setCategory(null);
         }
       } finally {
         if (mounted) {
@@ -108,8 +110,12 @@ export default function CategoryPage({ params }: CategoryPageProps) {
     );
   }
 
-  if (!category) {
+  if (!loading && !category) {
     notFound();
+  }
+
+  if (!category) {
+    return null;
   }
 
   return (

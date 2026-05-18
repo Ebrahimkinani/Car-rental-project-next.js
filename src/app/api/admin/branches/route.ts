@@ -1,5 +1,6 @@
 import { NextResponse } from 'next/server';
 import { getDb } from '@/lib/db/mongo';
+import { USE_MOCK_DATA } from '@/lib/data-source';
 
 // Branch document interface
 interface BranchDoc {
@@ -11,6 +12,16 @@ interface BranchDoc {
 
 export async function GET() {
   try {
+    if (USE_MOCK_DATA) {
+      return NextResponse.json({
+        branches: [
+          { name: 'Doha', city: 'Doha', country: 'Qatar' },
+          { name: 'Al Wakrah', city: 'Al Wakrah', country: 'Qatar' },
+          { name: 'Al Khor', city: 'Al Khor', country: 'Qatar' },
+        ],
+      });
+    }
+
     const db = await getDb();
     const branches = db.collection<BranchDoc>('branches');
 

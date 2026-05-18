@@ -2,11 +2,15 @@ import { NextRequest, NextResponse } from 'next/server';
 import { dbConnect } from '@/lib/mongodb';
 import mongoose from 'mongoose';
 import { UserDoc } from '@/lib/types/db';
+import { USE_MOCK_DATA } from '@/lib/data-source';
+import { getStoreClientKpis } from '@/lib/mock-store';
 
-// GET /api/admin/clients/kpis - Get KPI metrics
 export async function GET(_request: NextRequest) {
   try {
-    // TODO: Add proper admin authentication
+    if (USE_MOCK_DATA) {
+      return NextResponse.json(getStoreClientKpis());
+    }
+
     await dbConnect();
 
     const now = new Date();
